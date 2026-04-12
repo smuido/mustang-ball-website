@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
+import Home from './pages/home';
 
 function App() {
   return (
@@ -8,7 +9,7 @@ function App() {
       <NavBar />
       <main>
         <Routes>
-          <Route path="/" element={<h1>Welcome to Mustang Ball</h1>} />
+          <Route path="/" element={<Home />} />
           <Route path="/competitors" element={<h1>Competitors</h1>} />
           <Route path="/spectators" element={<h1>Spectators</h1>} />
           <Route path="/past-events" element={<h1>Past Events</h1>} />
