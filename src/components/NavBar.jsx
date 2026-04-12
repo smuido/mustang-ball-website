@@ -15,6 +15,7 @@ export default function NavBar() {
                     <li><Link to="/spectators">Spectators</Link></li>
                     <li><Link to="/past-events">Past Events</Link></li>
                     <li><Link to="/our-history">Our History</Link></li>
+                    <li><a href="https://cpdancesport.wixsite.com/cpballroom" target="_blank" rel="noopener">CP Ballroom Team</a></li>
                     <li><Link to="/contact">Contact Us</Link></li>
                 </ul>
             </div>
