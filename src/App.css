@@ -16,6 +16,13 @@ body {
   min-height: 100vh;
 }
 
+main.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
 .App {
   /* Add your app container styles here */
 }
