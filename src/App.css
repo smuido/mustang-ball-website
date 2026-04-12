@@ -1,3 +1,20 @@
+html, body {
+  overflow-x: hidden;
+}
+
+
+.App {
+  overflow-x: hidden;
+}
+
+
+.main-content {
+  overflow-x: hidden;
+}
+img, table {
+  max-width: 100%;
+  box-sizing: border-box;
+}
 * {
   margin: 0;
   padding: 0;

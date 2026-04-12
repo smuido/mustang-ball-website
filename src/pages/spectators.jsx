@@ -46,11 +46,10 @@ export default function Spectators() {
                             but cannot occupy front row seats during the evening session.</p>
                         <p className='eventbrite-line'>Tickets can be purchased through the <a href="https://www.eventbrite.com/o/28980597001" target="_blank" rel="noopener noreferrer">EventBrite</a></p>
                     </div>
-                    <hr className="section-divider" />
-                    <div className='Spectator Guide'>
-                    </div>
                 </div>
             </div>
+
+            <hr className="section-divider" />
         </div>
     );
 }
