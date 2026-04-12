@@ -1,0 +1,91 @@
+.spectator-guide-section {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+	margin-top: 2rem;
+	flex-wrap: wrap;
+}
+
+.spectator-guide-text {
+	flex: 1 1 300px;
+	min-width: 220px;
+}
+
+.spectator-guide-image {
+	max-width: 300px;
+	width: 100%;
+	height: auto;
+	border-radius: 8px;
+	object-fit: cover;
+}
+.section-divider {
+	border: none;
+	border-top: 2px solid #ccc;
+	margin: 2rem 0;
+}
+.ticket-table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0.5rem 0.5rem;
+	margin: 1.5rem 0;
+}
+
+.ticket-table th,
+.ticket-table td {
+	padding: 0.5rem 1rem;
+	text-align: left;
+}
+
+.ticket-table th {
+	background: #f0f0f0;
+	font-weight: 600;
+}
+
+.ticket-table tr {
+	background: #fff;
+}
+.spectators-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+	width: 100%;
+	flex-wrap: wrap
+}
+
+.arial-image {
+	max-width: 650px;
+	width: 100%;
+	height: auto;
+    aspect-ratio: 1.2;
+	border-radius: 50px;
+	object-fit: cover;
+    
+}
+
+.spectators-text {
+	flex: 1 1 300px;
+}
+.spectators-page {
+	padding: 0 1rem;
+	margin: 0 auto;
+	max-width: 1500px;
+	box-sizing: border-box;
+}
+.ticket_list {
+    list-style: disc;
+    padding-left: 4rem;
+    margin-top: 0.5rem;
+}
+.price_line {
+    margin-top: 1rem;
+    font-weight: 400;
+}
+.eventbrite-line {
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+.ticket-title {
+    margin-top: 4rem;
+}
