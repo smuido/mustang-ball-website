@@ -184,3 +184,34 @@
     margin-top: 1rem;
     text-align: left;
 }
+
+.style-table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0 0;
+    border-spacing: 0.5rem 0.5rem;
+    background-color: white;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+	.style-table thead {
+		border-bottom: 18px solid transparent;
+	}
+	margin: 1.5rem 0;
+}
+
+.style-table th,
+.style-table td {
+	padding: 0.5rem 1rem;
+	text-align: left;
+}
+
+.style-table th {
+	background: #f0f0f0;
+	font-weight: 600;
+}
+
+.style-table tr {
+	background: #fff;
+}
+.faq-title {
+    margin-bottom: 1rem;
+}

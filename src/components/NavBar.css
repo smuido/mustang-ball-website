@@ -9,6 +9,7 @@
     width: 100%;
     height: 65px;
     position: relative;
+    z-index: 10000;
 }
 
 .navbar-container {
@@ -133,7 +134,7 @@
 
     .navbar-menu {
         position: absolute;
-        top: 32px;
+        top: 48px;
         right: 0;
         left: unset;
         width: 175px;
