@@ -113,6 +113,15 @@
 	font-size: 0.95rem;
 }
 
+.form-honeypot-label,
+.form-honeypot-input {
+	position: absolute;
+	left: -10000px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
 .contact-form input,
 .contact-form textarea {
 	border: 1px solid #c4d1c5;
@@ -147,8 +156,27 @@
 	width: fit-content;
 }
 
+.contact-submit-button:disabled {
+	opacity: 0.75;
+	cursor: not-allowed;
+}
+
 .contact-submit-button:hover {
 	filter: brightness(1.05);
+}
+
+.contact-form-status {
+	margin: 0.35rem 0 0;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+.contact-form-status.success {
+	color: #2f6f3b;
+}
+
+.contact-form-status.error {
+	color: #9b2c2c;
 }
 
 @media (max-width: 900px) {

@@ -1,16 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { FaFacebookF, FaGlobe, FaInstagram } from 'react-icons/fa';
 import './contact.css';
 
-const CONTACT_EMAIL = '23smayaguido@gmail.com';
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const SUBMIT_COOLDOWN_SECONDS = 30;
 
 export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
+        website: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+    const [cooldownRemaining, setCooldownRemaining] = useState(0);
+
+    useEffect(() => {
+        if (cooldownRemaining <= 0) {
+            return undefined;
+        }
+
+        const timer = window.setInterval(() => {
+            setCooldownRemaining((prev) => Math.max(prev - 1, 0));
+        }, 1000);
+
+        return () => window.clearInterval(timer);
+    }, [cooldownRemaining]);
 
     const socialLinks = [
         {
@@ -35,19 +55,78 @@ export default function Contact() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const emailSubject = formData.subject || `Message from ${formData.name}`;
-        const emailBody = [
+        if (formData.website.trim()) {
+            setSubmitStatus({
+                type: 'success',
+                message: 'Message sent successfully. We will get back to you soon.'
+            });
+            return;
+        }
+
+        if (cooldownRemaining > 0) {
+            setSubmitStatus({
+                type: 'error',
+                message: `Please wait ${cooldownRemaining}s before sending another message.`
+            });
+            return;
+        }
+
+        if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+            setSubmitStatus({
+                type: 'error',
+                message: 'Email form is not configured yet. Add EmailJS keys in your .env file.'
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitStatus({ type: '', message: '' });
+
+        const normalizedSubject = formData.subject || `Message from ${formData.name}`;
+        const fullMessage = [
             `Name: ${formData.name}`,
             `Email: ${formData.email}`,
+            `Subject: ${normalizedSubject}`,
             '',
             formData.message
         ].join('\n');
 
-        const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        window.location.href = mailtoUrl;
+        try {
+            await emailjs.send(
+                EMAILJS_SERVICE_ID,
+                EMAILJS_TEMPLATE_ID,
+                {
+                    name: formData.name,
+                    email: formData.email,
+                    from: formData.email,
+                    from_name: formData.name,
+                    from_email: formData.email,
+                    reply_to: formData.email,
+                    subject: normalizedSubject,
+                    message: formData.message,
+                    full_message: fullMessage,
+                    details: fullMessage
+                },
+                EMAILJS_PUBLIC_KEY
+            );
+
+            setSubmitStatus({
+                type: 'success',
+                message: 'Message sent successfully. We will get back to you soon.'
+            });
+            setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+            setCooldownRemaining(SUBMIT_COOLDOWN_SECONDS);
+        } catch {
+            setSubmitStatus({
+                type: 'error',
+                message: 'Could not send message right now. Please try again in a moment.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -101,9 +180,35 @@ export default function Contact() {
                             required
                         />
 
-                        <button type="submit" className="contact-submit-button">
-                            Send Email
+                        <label htmlFor="website" className="form-honeypot-label">Website</label>
+                        <input
+                            id="website"
+                            name="website"
+                            type="text"
+                            value={formData.website}
+                            onChange={handleChange}
+                            autoComplete="off"
+                            tabIndex="-1"
+                            className="form-honeypot-input"
+                            aria-hidden="true"
+                        />
+
+                        <button
+                            type="submit"
+                            className="contact-submit-button"
+                            disabled={isSubmitting || cooldownRemaining > 0}
+                        >
+                            {isSubmitting
+                                ? 'Sending...'
+                                : cooldownRemaining > 0
+                                    ? `Wait ${cooldownRemaining}s`
+                                    : 'Send Email'}
                         </button>
+                        {submitStatus.message && (
+                            <p className={`contact-form-status ${submitStatus.type}`} role="status">
+                                {submitStatus.message}
+                            </p>
+                        )}
                     </form>
                 </article>
 
