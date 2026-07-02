@@ -130,6 +130,22 @@ export default function Spectators() {
                         </tr>
                     </tbody>
                 </table>
+                <p>These dance styles will be competed in at <strong>7</strong> different levels, including:</p>
+                <ul className='level_list'>
+                    <li>
+                        Newcomer
+                        <ul className='level_sublist'>
+                            <li>Couples only qualify for Newcomer their first year of competing. After that, they must move up to bronze.</li>
+                        </ul>
+                    </li>
+                    <li>Bronze</li>
+                    <li>Silver</li>
+                    <li>Gold</li>
+                    <li>Novice</li>
+                    <li>Pre-Champion</li>
+                    <li>Champion</li>
+                </ul>
+                <p>Competitors are encouraged to dance the level they are eligible for and one level up. Competitors will be judged on their technique, presentation, and showmanship. The judges will rank the couples based on their performance, and the scores from all the judges will be combined to determine the final standings.</p>
             </div>
             <hr className="section-divider" />
             <div className="spectators-faq">

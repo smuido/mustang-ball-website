@@ -45,7 +45,7 @@ export default function Contact() {
         },
         {
             name: 'Cal Poly Now',
-            href: 'https://now.calpoly.edu/organization/website',
+            href: 'https://now.calpoly.edu/organization/ballroom',
             icon: <FaGlobe />
         }
     ];
