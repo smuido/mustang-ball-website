@@ -1,0 +1,134 @@
+.hero {
+	display: grid;
+	grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+	gap: 2rem;
+	align-items: start;
+}
+
+.hero-sidebar {
+	display: grid;
+	gap: 1.25rem;
+}
+
+.hero-card h1 {
+	margin-bottom: 0.5rem;
+}
+
+.hero-dates {
+	color: var(--muted);
+	font-size: 0.92rem;
+	margin-bottom: 0;
+}
+
+.hero-card .btn-row {
+	margin-top: 1.5rem;
+}
+
+.promo-card {
+	display: block;
+	position: relative;
+	border-radius: var(--radius);
+	overflow: hidden;
+	min-height: 220px;
+	background-size: cover;
+	background-position: center 20%;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.promo-card-overlay {
+	position: relative;
+	height: 100%;
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	background: linear-gradient(180deg, rgba(22, 63, 43, 0.15), rgba(15, 36, 25, 0.88));
+}
+
+.promo-card h3 {
+	color: #ffffff;
+	margin-bottom: 0.35rem;
+	font-size: 1.15rem;
+}
+
+.promo-card p {
+	color: rgba(255, 255, 255, 0.88);
+	font-size: 0.9rem;
+	margin-bottom: 0.75rem;
+}
+
+.promo-link {
+	font-weight: 700;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.promo-card:hover .promo-link {
+	text-decoration: underline;
+}
+
+.hero-slideshow {
+	margin-bottom: 1.5rem;
+}
+
+.hero-slideshow .slideshow-slide {
+	transform: scale(1.15);
+}
+
+.hero-slideshow .slideshow-frame {
+	height: clamp(220px, 32vw, 380px);
+}
+
+.hero-main p {
+	color: var(--ink);
+}
+
+.quick-links {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1.25rem;
+}
+
+.quick-link {
+	display: block;
+	padding-top: 1rem;
+	border-top: 3px solid var(--green);
+	color: var(--ink);
+	text-decoration: none;
+}
+
+.quick-link p {
+	color: var(--muted);
+	font-size: 0.92rem;
+	margin: 0.4rem 0 0.75rem;
+}
+
+.quick-link-cta {
+	color: var(--green-deep);
+	font-weight: 700;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.quick-link:hover .quick-link-cta {
+	text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+	.hero {
+		grid-template-columns: 1fr;
+	}
+
+	.quick-links {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 560px) {
+	.quick-links {
+		grid-template-columns: 1fr;
+	}
+}

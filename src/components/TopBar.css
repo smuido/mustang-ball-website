@@ -1,0 +1,31 @@
+.topbar {
+    background: var(--green-dark);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.82rem;
+}
+
+.topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.45rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.topbar-inner a {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.topbar-inner a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+    .topbar-inner {
+        padding: 0.4rem 1rem;
+        font-size: 0.76rem;
+    }
+}

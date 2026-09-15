@@ -1,0 +1,45 @@
+.bib-frame {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	border-radius: var(--radius);
+}
+
+.bib-frame .page-hero-image {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: unset;
+	border-radius: 0;
+	object-position: center 45%;
+	transform: scale(1.15);
+}
+
+@media (max-width: 800px) {
+	.bib-frame {
+		height: clamp(220px, 55vw, 320px);
+		min-height: 0;
+		order: -1;
+	}
+
+	.bib-frame .page-hero-image {
+		max-width: none;
+		margin: 0;
+		order: 0;
+	}
+}
+
+.fine-print-heading {
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--muted);
+}
+
+.fine-print {
+	font-size: 0.85rem;
+	color: var(--muted);
+	line-height: 1.6;
+}

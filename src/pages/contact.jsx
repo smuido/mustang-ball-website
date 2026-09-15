@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { FaFacebookF, FaGlobe, FaInstagram } from 'react-icons/fa';
 import './contact.css';
+import { intro, form, statusMessages, online, socialLinks as socialLinksContent } from '../content/contact';
+
+const SOCIAL_ICONS = {
+    Instagram: <FaInstagram />,
+    Facebook: <FaFacebookF />,
+    'Cal Poly Now': <FaGlobe />,
+};
 
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
@@ -32,23 +39,10 @@ export default function Contact() {
         return () => window.clearInterval(timer);
     }, [cooldownRemaining]);
 
-    const socialLinks = [
-        {
-            name: 'Instagram',
-            href: 'https://www.instagram.com/calpoly_ballroom/',
-            icon: <FaInstagram />
-        },
-        {
-            name: 'Facebook',
-            href: 'https://www.facebook.com/calpolyballroom/',
-            icon: <FaFacebookF />
-        },
-        {
-            name: 'Cal Poly Now',
-            href: 'https://now.calpoly.edu/organization/ballroom',
-            icon: <FaGlobe />
-        }
-    ];
+    const socialLinks = socialLinksContent.map((link) => ({
+        ...link,
+        icon: SOCIAL_ICONS[link.name],
+    }));
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -61,7 +55,7 @@ export default function Contact() {
         if (formData.website.trim()) {
             setSubmitStatus({
                 type: 'success',
-                message: 'Message sent successfully. We will get back to you soon.'
+                message: statusMessages.success
             });
             return;
         }
@@ -69,7 +63,7 @@ export default function Contact() {
         if (cooldownRemaining > 0) {
             setSubmitStatus({
                 type: 'error',
-                message: `Please wait ${cooldownRemaining}s before sending another message.`
+                message: statusMessages.cooldown.replace('{seconds}', cooldownRemaining)
             });
             return;
         }
@@ -77,7 +71,7 @@ export default function Contact() {
         if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
             setSubmitStatus({
                 type: 'error',
-                message: 'Email form is not configured yet. Add EmailJS keys in your .env file.'
+                message: statusMessages.notConfigured
             });
             return;
         }
@@ -115,14 +109,14 @@ export default function Contact() {
 
             setSubmitStatus({
                 type: 'success',
-                message: 'Message sent successfully. We will get back to you soon.'
+                message: statusMessages.success
             });
             setFormData({ name: '', email: '', subject: '', message: '', website: '' });
             setCooldownRemaining(SUBMIT_COOLDOWN_SECONDS);
         } catch {
             setSubmitStatus({
                 type: 'error',
-                message: 'Could not send message right now. Please try again in a moment.'
+                message: statusMessages.sendFailed
             });
         } finally {
             setIsSubmitting(false);
@@ -130,17 +124,16 @@ export default function Contact() {
     };
 
     return (
-        <section className="contact-page">
-            <div className="contact-hero">
-                <h1>Contact Cal Poly Ballroom about Mustang Ball</h1>
-                <p>Reach us on social media or send us a message directly.</p>
-            </div>
+        <div className="page">
+            <span className="eyebrow">{intro.eyebrow}</span>
+            <h1>Contact Us</h1>
+            <p>{intro.text}</p>
 
             <div className="contact-grid">
-                <article className="contact-card contact-card-email">
-                    <h2>Email Us</h2>
+                <div className="card">
+                    <h2>{form.heading}</h2>
                     <form className="contact-form" onSubmit={handleSubmit}>
-                        <label htmlFor="name">Name</label>
+                        <label htmlFor="name">{form.nameLabel}</label>
                         <input
                             id="name"
                             name="name"
@@ -150,7 +143,7 @@ export default function Contact() {
                             required
                         />
 
-                        <label htmlFor="email">Your Email</label>
+                        <label htmlFor="email">{form.emailLabel}</label>
                         <input
                             id="email"
                             name="email"
@@ -160,17 +153,17 @@ export default function Contact() {
                             required
                         />
 
-                        <label htmlFor="subject">Subject</label>
+                        <label htmlFor="subject">{form.subjectLabel}</label>
                         <input
                             id="subject"
                             name="subject"
                             type="text"
                             value={formData.subject}
                             onChange={handleChange}
-                            placeholder="Questions about tickets, classes, or events"
+                            placeholder={form.subjectPlaceholder}
                         />
 
-                        <label htmlFor="message">Message</label>
+                        <label htmlFor="message">{form.messageLabel}</label>
                         <textarea
                             id="message"
                             name="message"
@@ -195,14 +188,14 @@ export default function Contact() {
 
                         <button
                             type="submit"
-                            className="contact-submit-button"
+                            className="btn"
                             disabled={isSubmitting || cooldownRemaining > 0}
                         >
                             {isSubmitting
-                                ? 'Sending...'
+                                ? form.submitSendingLabel
                                 : cooldownRemaining > 0
-                                    ? `Wait ${cooldownRemaining}s`
-                                    : 'Send Email'}
+                                    ? form.submitCooldownLabel.replace('{seconds}', cooldownRemaining)
+                                    : form.submitLabel}
                         </button>
                         {submitStatus.message && (
                             <p className={`contact-form-status ${submitStatus.type}`} role="status">
@@ -210,12 +203,11 @@ export default function Contact() {
                             </p>
                         )}
                     </form>
-                </article>
+                </div>
 
-                <article className="contact-card contact-card-social">
-                    <h2>Find Us Online</h2>
-                    <p className="social-subtitle">Follow us for announcements, event details, and updates. 
-                        Feel free to reach out with any questions, comments, or concerns!</p>
+                <div className="card">
+                    <h2>{online.heading}</h2>
+                    <p className="social-subtitle">{online.subtitle}</p>
                     <div className="social-list" role="list">
                         {socialLinks.map((link) => (
                             <a
@@ -223,15 +215,15 @@ export default function Contact() {
                                 href={link.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="social-link-button"
+                                className="social-link"
                             >
-                                <span className="social-link-icon" aria-hidden="true">{link.icon}</span>
+                                <span aria-hidden="true">{link.icon}</span>
                                 <span>{link.name}</span>
                             </a>
                         ))}
                     </div>
-                </article>
+                </div>
             </div>
-        </section>
+        </div>
     );
 }

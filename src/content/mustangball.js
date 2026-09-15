@@ -1,3 +1,18 @@
+// Historical staff and judge records for each past Mustang Ball, one
+// export per year. Used by the Past Events page to fill in the details
+// table for whichever year is selected.
+//
+// To add a new year once it's happened:
+//   1. Copy the block for the most recent year below.
+//   2. Change `year2026` to `year20XX` (the new year).
+//   3. Fill in the names for each role, and remove any roles that don't
+//      apply. You can also add new role names — whatever key you use
+//      becomes the row label on the page automatically.
+//   4. Set `resultsType` to 'PDF' or 'link', and `resultsFile` to the PDF
+//      path or results URL.
+//   5. Add a matching entry in pastEvents.js with the year's title and
+//      dates so it shows up in the archive list.
+
 export const year2007 = {
 	chairmanOfJudges: ['Ava Kaye'],
 	adjudicators: ['Nigel Clarke', 'Tom Hicks', 'Porfirio Landeros', 'Laetitia Santore', 'Alex Zagrean'],
@@ -250,4 +265,15 @@ export const year2025 = {
     resultsFile: 'https://results.o2cm.com/event3.asp?event=cpd25'
 }
 
-export const year2026 = []
+export const year2026 = {
+    chairmanOfJudges: ['David Weise'],
+	masterOfCeremonies: ['David Weise'],
+	adjudicators: ['Jonathan Atkinson', 'Lorena Bravo', 'Stacey Chuang', 'Ikaika Dowsett', 'Roberta Lanard', 'Marcus Johnson', 'Roxanne Milotti', 'Igor Colag', 'Alexandru Zagrean'],
+	professionalShowcase: ['Igor Colag', 'Roxanne Milotti'],
+	musicDirector: ['Annie Morales'],
+	scrutineer: ['Denise Machin'],
+	competitionDirector: ['Christopher Ellwood'],
+	assistantCompetitionOrganizer: ['Rosalind Thies'],
+    resultsType: 'link',
+    resultsFile: 'https://results.o2cm.com/event3.asp?event=cpd25'
+}

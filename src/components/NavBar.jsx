@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../assets/navbar_logo.png';
 import './NavBar.css';
+import { mainNavLinks, navCta } from '../content/navigation';
 
 export default function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -35,22 +36,33 @@ export default function NavBar() {
             <div className="navbar-container">
                 <div className="navbar-logo">
                     <Link to="/">
-                        <img src={logoImg} alt="Logo" className="logo-image" />
+                        <img src={logoImg} alt="Mustang Ball logo" className="logo-image" />
                     </Link>
                 </div>
-                <button className="hamburger" onClick={toggleMenu} ref={buttonRef}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul className={`navbar-menu ${isOpen ? 'active' : ''}`} ref={menuRef}>
-                    <li><Link to="/competitors" onClick={() => setIsOpen(false)}>Competitors</Link></li>
-                    <li><Link to="/spectators" onClick={() => setIsOpen(false)}>Spectators</Link></li>
-                    <li><Link to="/past-events" onClick={() => setIsOpen(false)}>Past Events</Link></li>
-                    <li><Link to="/our-history" onClick={() => setIsOpen(false)}>Our History</Link></li>
-                    <li><a href="https://cpdancesport.wixsite.com/cpballroom" target="_blank" rel="noopener" onClick={() => setIsOpen(false)}>Cal Poly Ballroom</a></li>
-                    <li><Link to="/contact" onClick={() => setIsOpen(false)}>Contact Us</Link></li>
-                </ul>
+
+                <div className="navbar-right">
+                    <ul className={`navbar-menu ${isOpen ? 'active' : ''}`} ref={menuRef}>
+                        {mainNavLinks.map((link) => (
+                            <li key={link.name}>
+                                {link.external ? (
+                                    <a href={link.href} target="_blank" rel="noopener" onClick={() => setIsOpen(false)}>
+                                        {link.name}
+                                    </a>
+                                ) : (
+                                    <Link to={link.to} onClick={() => setIsOpen(false)}>
+                                        {link.name}
+                                    </Link>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                    <Link to={navCta.to} className="btn navbar-cta">{navCta.label}</Link>
+                    <button className="hamburger" onClick={toggleMenu} ref={buttonRef} aria-label="Toggle menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
             </div>
         </nav>
     );

@@ -1,35 +1,82 @@
 import './Footer.css';
-import { FaFacebookF, FaGlobe, FaInstagram } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaCalendarAlt, FaEnvelope, FaFacebookF, FaGlobe, FaInstagram, FaMapMarkerAlt } from 'react-icons/fa';
+import siteInfo from '../content/siteInfo';
+import { footerNavLinks } from '../content/navigation';
+import { aboutHeading, aboutBefore, aboutLinkText, aboutAfter, exploreHeading, eventInfoHeading, hostedByLine, footerSocialLinks } from '../content/footer';
+
+const SOCIAL_ICONS = {
+    Instagram: <FaInstagram />,
+    Facebook: <FaFacebookF />,
+    CPNow: <FaGlobe />,
+};
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
-    const footerLinks = [
-        { name: 'Instagram', href: 'https://www.instagram.com/calpoly_ballroom/', icon: <FaInstagram /> },
-        { name: 'Facebook', href: 'https://www.facebook.com/calpolyballroom/', icon: <FaFacebookF /> },
-        { name: 'CPNow', href: 'https://now.calpoly.edu/organization/website', icon: <FaGlobe /> }
-    ];
+    const footerLinks = footerSocialLinks.map((link) => ({ ...link, icon: SOCIAL_ICONS[link.name] }));
 
     return (
         <footer className="footer">
             <div className="footer-container">
-                <div className="footer-content">
-                    <p>&copy; {currentYear} Mustang Ball. All rights reserved.</p>
-                    <div className="footer-links">
-                        {footerLinks.map((link) => (
-                            <a
-                                key={link.name}
-                                href={link.href}
-                                className="footer-link-button"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <span className="footer-link-logo" aria-hidden="true">
-                                    {link.icon}
-                                </span>
-                                <span>{link.name}</span>
-                            </a>
-                        ))}
-                    </div>
+                <div className="footer-grid">
+                    <section>
+                        <h3 className="footer-title">{aboutHeading}</h3>
+                        <p className="footer-description">
+                            {aboutBefore}
+                            <a href={siteInfo.cdaUrl} target="_blank" rel="noopener noreferrer" className="cda-link">{aboutLinkText}</a>
+                            {aboutAfter}
+                        </p>
+                        <div className="footer-links">
+                            {footerLinks.map((link) => (
+                                <a
+                                    key={link.name}
+                                    href={link.href}
+                                    className="footer-link-button"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <span className="footer-link-logo" aria-hidden="true">
+                                        {link.icon}
+                                    </span>
+                                    <span>{link.name}</span>
+                                </a>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 className="footer-title">{exploreHeading}</h3>
+                        <ul className="footer-list">
+                            {footerNavLinks.map((link) => (
+                                <li key={link.name}>
+                                    <Link to={link.to} className="footer-nav-link">{link.name}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 className="footer-title">{eventInfoHeading}</h3>
+                        <ul className="footer-list footer-list-info">
+                            <li>
+                                <FaCalendarAlt aria-hidden="true" />
+                                <span>{siteInfo.eventDatesPlain}</span>
+                            </li>
+                            <li>
+                                <FaMapMarkerAlt aria-hidden="true" />
+                                <span>{siteInfo.venueFull}</span>
+                            </li>
+                            <li>
+                                <FaEnvelope aria-hidden="true" />
+                                <a href={`mailto:${siteInfo.contactEmail}`} className="footer-nav-link">{siteInfo.contactEmail}</a>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <div className="footer-bottom">
+                    <p>&copy; {currentYear} {siteInfo.eventName}. All rights reserved.</p>
+                    <p>{hostedByLine}</p>
                 </div>
             </div>
         </footer>
