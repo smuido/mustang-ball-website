@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import './App.css';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import TopBar from './components/TopBar';
@@ -12,8 +13,10 @@ import OurHistory from './pages/our-history';
 function App() {
   return (
     <div className="App">
-      <TopBar />
-      <NavBar />
+      <header className="site-header">
+        <TopBar />
+        <NavBar />
+      </header>
       <main className='main-content'>
         <Routes>
           <Route path="/" element={<Home />} />

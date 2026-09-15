@@ -56,7 +56,7 @@ export default function NavBar() {
                             </li>
                         ))}
                     </ul>
-                    <Link to={navCta.to} className="btn navbar-cta">{navCta.label}</Link>
+                    <a href={navCta.href} target="_blank" rel="noopener noreferrer" className="btn navbar-cta">{navCta.label}</a>
                     <button className="hamburger" onClick={toggleMenu} ref={buttonRef} aria-label="Toggle menu">
                         <span></span>
                         <span></span>

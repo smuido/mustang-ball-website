@@ -16,7 +16,7 @@ export default function Footer() {
     const footerLinks = footerSocialLinks.map((link) => ({ ...link, icon: SOCIAL_ICONS[link.name] }));
 
     return (
-        <footer className="footer">
+        <footer className="footer" id="site-footer">
             <div className="footer-container">
                 <div className="footer-grid">
                     <section>
