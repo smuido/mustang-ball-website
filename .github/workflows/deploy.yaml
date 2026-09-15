@@ -3,8 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # Lets you trigger a deploy manually from the Actions tab without a new push.
-  workflow_dispatch:
 
 # Only one deployment at a time; a new push cancels an in-progress one.
 concurrency:
