@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   # Lets you trigger a deploy manually from the Actions tab without a new push.
   workflow_dispatch:
 
@@ -30,7 +32,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
 
       - name: Build
         run: npm run build
@@ -43,16 +48,22 @@ jobs:
         run: cp dist/index.html dist/404.html
 
       - name: Upload build output
+        # Only needed when we're actually going to deploy it.
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deploy:
+    # Pull requests only get the build/lint check above — deploying their
+    # content straight to the live site would publish unreviewed changes,
+    # and GitHub doesn't grant Pages-deploy permissions to PR runs anyway.
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      # url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
