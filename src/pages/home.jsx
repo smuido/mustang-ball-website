@@ -11,7 +11,7 @@ import { hero, promoCard, introParagraphs, milestoneParagraph, quickLinks, quick
 const heroPhotos = [
   { src: lobbyImg, alt: 'The Mustang Ball ballroom full of dancers and spectators', position: 'center 30%' },
   { src: practiceImg, alt: 'Dancers practicing together before Mustang Ball', position: 'center 30%' },
-  { src: reachImg, alt: 'A couple dancing with arms outstretched at Mustang Ball', position: 'center 100%' },
+  { src: reachImg, alt: 'A couple dancing with arms outstretched at Mustang Ball', position: 'center 120%' },
 ];
 
 export default function Home() {
