@@ -3,6 +3,7 @@ import './App.css';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import TopBar from './components/TopBar';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/home';
 import Competitors from './pages/competitors';
 import Spectators from './pages/spectators';
@@ -13,6 +14,7 @@ import OurHistory from './pages/our-history';
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <header className="site-header">
         <TopBar />
         <NavBar />
