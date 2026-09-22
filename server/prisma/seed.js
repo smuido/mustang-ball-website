@@ -111,6 +111,11 @@ async function seedAdminUser() {
   const email = process.env.SEED_ADMIN_EMAIL;
   const password = process.env.SEED_ADMIN_PASSWORD;
   const name = process.env.SEED_ADMIN_NAME || 'Admin';
+  // Opt-in flag so a normal deploy never silently changes an existing
+  // password. Set SEED_ADMIN_RESET_PASSWORD=true alongside the vars above
+  // when you specifically want to reset a forgotten password (e.g. on a
+  // host with no shell access) — see server/README.md.
+  const shouldReset = process.env.SEED_ADMIN_RESET_PASSWORD === 'true';
 
   if (!email || !password) {
     console.log('SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not set, skipping admin user seed');
@@ -118,12 +123,21 @@ async function seedAdminUser() {
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
+  const passwordHash = await bcrypt.hash(password, 12);
+
   if (existing) {
-    console.log(`admin user "${email}" already exists, skipping`);
+    if (!shouldReset) {
+      console.log(`admin user "${email}" already exists, skipping`);
+      return;
+    }
+    await prisma.user.update({
+      where: { email },
+      data: { passwordHash, isActive: true },
+    });
+    console.log(`reset password for existing user "${email}"`);
     return;
   }
 
-  const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({
     data: { email, name, passwordHash, role: 'admin' },
   });

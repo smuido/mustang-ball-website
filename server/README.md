@@ -137,6 +137,28 @@ The first login comes from the seed script. After that, sign in and use
 **Users** in the dashboard (admin role required) to add more accounts — no
 server access needed.
 
+## Resetting a forgotten password (no shell needed)
+
+If you're locked out (forgot the password and there's no other admin
+account to fix it from the dashboard), the seed script can force a reset —
+the same mechanism that creates the first login, extended with an opt-in
+flag so it never resets a password by accident on a normal deploy:
+
+1. On the Render service (`mustang-ball-api`) → **Environment**, set:
+   - `SEED_ADMIN_EMAIL` → the account's email
+   - `SEED_ADMIN_PASSWORD` → the new password
+   - `SEED_ADMIN_RESET_PASSWORD` → `true`
+2. Saving triggers a redeploy automatically (or use **Manual Deploy** if
+   needed) — this reruns `npm run db:seed`, which now updates that
+   account's password instead of skipping it.
+3. Confirm you can log in with the new password.
+4. Delete `SEED_ADMIN_RESET_PASSWORD` (and the other two, if you don't want
+   the password sitting in Render's config) and redeploy once more. This
+   step matters more than it does for the initial setup: as long as
+   `SEED_ADMIN_RESET_PASSWORD=true` is set, *every* deploy will reset that
+   account's password back to `SEED_ADMIN_PASSWORD`, silently undoing any
+   password change made later through the dashboard.
+
 ## Migrations
 
 Schema changes go through Prisma migrations. After editing
