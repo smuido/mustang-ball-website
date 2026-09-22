@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { apiFetch } from '../api/client';
+import { apiFetch, setCsrfToken } from '../api/client';
 
 const AuthContext = createContext(null);
 
@@ -8,9 +8,11 @@ export function AuthProvider({ children }) {
 
   const refresh = useCallback(async () => {
     try {
-      const { user } = await apiFetch('/api/auth/me');
+      const { user, csrfToken } = await apiFetch('/api/auth/me');
+      setCsrfToken(csrfToken);
       setState({ status: 'authenticated', user });
     } catch {
+      setCsrfToken(null);
       setState({ status: 'anonymous', user: null });
     }
   }, []);
@@ -23,13 +25,15 @@ export function AuthProvider({ children }) {
   }, [refresh]);
 
   const login = useCallback(async (email, password) => {
-    const { user } = await apiFetch('/api/auth/login', { method: 'POST', body: { email, password } });
+    const { user, csrfToken } = await apiFetch('/api/auth/login', { method: 'POST', body: { email, password } });
+    setCsrfToken(csrfToken);
     setState({ status: 'authenticated', user });
     return user;
   }, []);
 
   const logout = useCallback(async () => {
     await apiFetch('/api/auth/logout', { method: 'POST' });
+    setCsrfToken(null);
     setState({ status: 'anonymous', user: null });
   }, []);
 

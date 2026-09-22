@@ -3,8 +3,8 @@ import { AUTH_COOKIE, verifySession } from '../lib/jwt.js';
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 // Verifies the JWT cookie and, for any request that changes state, also
-// requires a matching X-CSRF-Token header (double-submit pattern — see
-// server/README.md for why this is needed on a cross-origin cookie setup).
+// requires a matching X-CSRF-Token header — see server/README.md for why
+// the token travels via response body instead of a second cookie.
 export function requireAuth(req, res, next) {
   const token = req.cookies?.[AUTH_COOKIE];
   if (!token) {
@@ -26,6 +26,7 @@ export function requireAuth(req, res, next) {
   }
 
   req.user = { id: payload.sub, email: payload.email, role: payload.role };
+  req.csrfToken = payload.csrf;
   next();
 }
 

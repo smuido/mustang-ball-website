@@ -80,12 +80,18 @@ overwriting, so nothing is lost if someone saves something wrong.
   cross-origin `fetch` calls.
 - Because `SameSite=None` cookies are sent on cross-site requests too, the
   API also requires a `X-CSRF-Token` header on every state-changing request,
-  matching a token issued at login (double-submit pattern): the token is
-  embedded in the JWT and also set in a second, **non**-httpOnly cookie the
-  frontend can read and echo back as a header. A malicious site can trigger
-  a cross-site request that carries the cookies, but the same-origin policy
-  stops it from *reading* that second cookie's value, so it can't produce a
-  matching header. See `src/lib/jwt.js` and `src/middleware/auth.js`.
+  matching a token issued at login. That token travels in the login/`/me`
+  **response body**, not a second cookie — a double-submit cookie doesn't
+  work here because the frontend and API are on different domains, so a
+  cookie set by the API's response is scoped to the API's own origin and
+  frontend JS can never read it back via `document.cookie` to echo it as a
+  header (this was a real bug in an earlier version of this app: every save
+  failed with "Invalid CSRF token" because of exactly that). The frontend
+  keeps the token in memory (`src/api/client.js`) instead. A forged
+  cross-site request can still carry the auth cookie, but the attacking page
+  can't read the response body needed to get a valid token, because CORS
+  only allows reading responses from origins in `ALLOWED_ORIGINS`. See
+  `src/lib/jwt.js` and `src/middleware/auth.js`.
 - `/api/auth/login` is rate-limited (10 attempts / 15 min / IP).
 - CORS only allows the origins listed in `ALLOWED_ORIGINS` — never `*` —
   and `helmet()` sets standard security headers.

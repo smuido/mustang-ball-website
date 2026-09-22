@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
-import { AUTH_COOKIE, CSRF_COOKIE, SESSION_MAX_AGE_MS, cookieOptions, issueSession } from '../lib/jwt.js';
+import { AUTH_COOKIE, SESSION_MAX_AGE_MS, cookieOptions, issueSession } from '../lib/jwt.js';
 import { requireAuth } from '../middleware/auth.js';
 import { loginRateLimit } from '../middleware/rateLimit.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -40,16 +40,12 @@ authRouter.post(
     const { token, csrfToken } = issueSession(user);
     res
       .cookie(AUTH_COOKIE, token, cookieOptions(SESSION_MAX_AGE_MS))
-      .cookie(CSRF_COOKIE, csrfToken, { ...cookieOptions(SESSION_MAX_AGE_MS), httpOnly: false })
-      .json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+      .json({ user: { id: user.id, email: user.email, name: user.name, role: user.role }, csrfToken });
   })
 );
 
 authRouter.post('/logout', (req, res) => {
-  res
-    .clearCookie(AUTH_COOKIE, { path: '/' })
-    .clearCookie(CSRF_COOKIE, { path: '/' })
-    .json({ ok: true });
+  res.clearCookie(AUTH_COOKIE, { path: '/' }).json({ ok: true });
 });
 
 authRouter.get(
@@ -60,6 +56,6 @@ authRouter.get(
     if (!user || !user.isActive) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role }, csrfToken: req.csrfToken });
   })
 );

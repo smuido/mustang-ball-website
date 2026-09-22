@@ -4,7 +4,6 @@ import ms from 'ms';
 import { env } from '../env.js';
 
 export const AUTH_COOKIE = 'mb_token';
-export const CSRF_COOKIE = 'mb_csrf';
 
 // Single source of truth for how long a login lasts, derived from
 // JWT_EXPIRES_IN so the JWT's own expiry and the cookie's lifetime can
@@ -14,12 +13,17 @@ export const CSRF_COOKIE = 'mb_csrf';
 // server/README.md.
 export const SESSION_MAX_AGE_MS = ms(env.jwtExpiresIn);
 
-// The CSRF token is generated per-login, embedded as a JWT claim (so the
-// server can verify it statelessly), and also handed back in a
-// non-httpOnly cookie the frontend can read and echo as a header. A
-// cross-site attacker can trigger the cookie-bearing request but can't
-// read the cookie's value (browsers enforce same-origin on cookie access),
-// so they can't produce a matching header. See server/README.md.
+// The CSRF token is generated per-login and embedded as a JWT claim, so
+// the server can verify it statelessly. It's handed to the frontend in the
+// login/`/me` JSON response body (not a cookie — the frontend and API are
+// on different domains, and a cookie set by the API's response is scoped
+// to the API's own origin, so frontend JS could never read it back via
+// document.cookie to echo it as a header). The frontend keeps it in
+// memory and sends it back as X-CSRF-Token on state-changing requests. A
+// forged cross-site request can carry the auth cookie (SameSite=None makes
+// that possible) but can't read this response body — CORS blocks that for
+// any origin not in ALLOWED_ORIGINS — so it can't produce a matching
+// header. See server/README.md.
 export function issueSession(user) {
   const csrfToken = crypto.randomBytes(24).toString('hex');
   const token = jwt.sign(
