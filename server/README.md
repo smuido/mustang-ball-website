@@ -103,18 +103,24 @@ provisions a free Postgres database and a Node web service for this
 1. In the Render dashboard: **New > Blueprint**, point it at this repo.
 2. Render will create `mustang-ball-db` and `mustang-ball-api`. `DATABASE_URL`
    and `JWT_SECRET` are wired automatically.
-3. Set the `ALLOWED_ORIGINS` env var on `mustang-ball-api` to your deployed
-   frontend's origin, e.g. `https://<github-username>.github.io` (comma
-   -separate if you also want to allow `http://localhost:5173`).
-4. Set `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` / `SEED_ADMIN_NAME`, deploy,
-   then in the Render shell for the service run:
-   ```bash
-   npm run db:seed
-   ```
-   This loads the original site content and creates your first login. Once
-   it's run, unset those three env vars — you don't need the password
-   sitting in Render's config after the account exists, and the seed script
-   won't overwrite the account on a later run anyway.
+3. Set these env vars on `mustang-ball-api` before the first deploy finishes:
+   - `ALLOWED_ORIGINS` — your deployed frontend's origin, e.g.
+     `https://<github-username>.github.io` (comma-separate if you also want
+     to allow `http://localhost:5173`)
+   - `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` / `SEED_ADMIN_NAME` — your
+     first dashboard login
+4. The build command (`npm run build && npm run db:seed`) loads the
+   original site content and creates that login automatically — no shell
+   access needed, which matters because Render's Shell tab isn't available
+   on the free plan. `db:seed` is idempotent (it skips anything that
+   already exists), so it's safe to leave in the build command permanently
+   and it won't touch your data on later deploys.
+   
+   If you'd rather not leave the seed password sitting in Render's config
+   indefinitely: once you've confirmed you can log in, delete the three
+   `SEED_ADMIN_*` env vars and trigger **Manual Deploy → Deploy latest
+   commit** from the Render dashboard (free, no shell needed) to redeploy
+   without them.
 5. In your GitHub repo, add a `VITE_API_URL` Actions secret set to the
    Render service's URL (e.g. `https://mustang-ball-api.onrender.com`), so
    the deploy workflow bakes it into the built frontend. (The EmailJS

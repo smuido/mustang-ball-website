@@ -9,7 +9,10 @@ services:
     runtime: node
     rootDir: server
     plan: free
-    buildCommand: npm install && npm run build
+    # db:seed is idempotent (it skips any content block or user that
+    # already exists), so it's safe to run on every build. This avoids
+    # needing Render's Shell tab, which isn't available on the free plan.
+    buildCommand: npm install && npm run build && npm run db:seed
     startCommand: npm start
     healthCheckPath: /health
     envVars:
@@ -27,8 +30,12 @@ services:
       # https://<github-username>.github.io. Comma-separate multiple origins.
       - key: ALLOWED_ORIGINS
         sync: false
-      # Set these once in the Render dashboard, deploy, run the seed
-      # command below from the Render shell, then unset them.
+      # Set these before the first deploy so db:seed can create your admin
+      # login. Safe to leave set afterward (seed skips existing users), but
+      # if you'd rather not leave the password sitting in Render's config,
+      # delete these three after confirming you can log in, then trigger
+      # "Manual Deploy" from the Render dashboard (free, no shell needed)
+      # to redeploy without them.
       - key: SEED_ADMIN_EMAIL
         sync: false
       - key: SEED_ADMIN_PASSWORD
