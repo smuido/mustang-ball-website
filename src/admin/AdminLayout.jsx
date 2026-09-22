@@ -15,7 +15,7 @@ export default function AdminLayout() {
         </nav>
         <div className="admin-user">
           <span>{user.name} <span className="admin-role-badge">{user.role}</span></span>
-          <button type="button" className="btn btn-outline" onClick={logout}>Sign out</button>
+          <button type="button" className="admin-btn admin-btn-outline" onClick={logout}>Sign out</button>
         </div>
       </header>
       <main className="admin-content">

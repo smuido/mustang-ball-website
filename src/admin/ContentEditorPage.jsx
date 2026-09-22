@@ -81,7 +81,7 @@ export default function ContentEditorPage() {
       {loadState.status === 'error' && (
         <div className="admin-form-error" role="alert">
           <p>{error}</p>
-          <button type="button" className="btn btn-outline" onClick={load}>Retry</button>
+          <button type="button" className="admin-btn admin-btn-outline" onClick={load}>Retry</button>
         </div>
       )}
 
@@ -103,10 +103,10 @@ export default function ContentEditorPage() {
           />
           {error && <p className="admin-form-error" role="alert">{error}</p>}
           <div className="admin-editor-actions">
-            <button type="submit" className="btn" disabled={!isDirty || saveState === 'saving'}>
+            <button type="submit" className="admin-btn" disabled={!isDirty || saveState === 'saving'}>
               {saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved ✓' : 'Save changes'}
             </button>
-            <button type="button" className="btn btn-outline" onClick={handleRevert} disabled={!isDirty}>
+            <button type="button" className="admin-btn admin-btn-outline" onClick={handleRevert} disabled={!isDirty}>
               Revert
             </button>
           </div>

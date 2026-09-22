@@ -13,7 +13,7 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2h',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '400d',
   allowedOrigins: process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()),
   isProduction: process.env.NODE_ENV === 'production',
 };

@@ -241,7 +241,11 @@ a.admin-card:hover {
   gap: 0.5rem;
 }
 
-.btn {
+/* Prefixed admin-btn (not .btn) so admin chrome (login, toolbars, tables)
+   never clashes with the real site's own .btn styling, which the page
+   editors intentionally reuse for true visual fidelity — see
+   src/admin/editor/. */
+.admin-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -256,12 +260,12 @@ a.admin-card:hover {
   text-decoration: none;
 }
 
-.btn:disabled {
+.admin-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.btn-outline {
+.admin-btn-outline {
   background: transparent;
   color: #1f2430;
 }

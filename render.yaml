@@ -22,8 +22,11 @@ services:
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
+      # 400 days is the longest a cookie can actually live in any browser,
+      # so this is effectively "don't expire" — sessions only end on
+      # explicit sign-out or a password change.
       - key: JWT_EXPIRES_IN
-        value: 2h
+        value: 400d
       - key: NODE_ENV
         value: production
       # Update this after your GitHub Pages URL is known, e.g.

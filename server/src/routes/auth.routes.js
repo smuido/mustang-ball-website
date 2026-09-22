@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
-import { AUTH_COOKIE, CSRF_COOKIE, cookieOptions, issueSession } from '../lib/jwt.js';
+import { AUTH_COOKIE, CSRF_COOKIE, SESSION_MAX_AGE_MS, cookieOptions, issueSession } from '../lib/jwt.js';
 import { requireAuth } from '../middleware/auth.js';
 import { loginRateLimit } from '../middleware/rateLimit.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -13,8 +13,6 @@ const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
-
-const SESSION_MAX_AGE_MS = 2 * 60 * 60 * 1000;
 
 // Generic message on purpose: never reveal whether the email exists.
 const INVALID_CREDENTIALS = { error: 'Invalid email or password' };

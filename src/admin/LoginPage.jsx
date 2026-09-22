@@ -59,7 +59,7 @@ export default function LoginPage() {
 
         {error && <p className="admin-form-error" role="alert">{error}</p>}
 
-        <button type="submit" className="btn" disabled={isSubmitting}>
+        <button type="submit" className="admin-btn" disabled={isSubmitting}>
           {isSubmitting ? 'Signing in…' : 'Sign in'}
         </button>
       </form>

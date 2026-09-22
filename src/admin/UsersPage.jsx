@@ -107,7 +107,7 @@ export default function UsersPage() {
                 <td className="admin-table-actions">
                   <button
                     type="button"
-                    className="btn btn-outline"
+                    className="admin-btn admin-btn-outline"
                     onClick={() => handleToggleActive(u)}
                     disabled={u.id === currentUser.id}
                   >
@@ -115,7 +115,7 @@ export default function UsersPage() {
                   </button>
                   <button
                     type="button"
-                    className="btn btn-outline"
+                    className="admin-btn admin-btn-outline"
                     onClick={() => handleDelete(u)}
                     disabled={u.id === currentUser.id}
                   >
@@ -167,7 +167,7 @@ export default function UsersPage() {
           <option value="admin">Admin</option>
         </select>
 
-        <button type="submit" className="btn" disabled={isCreating}>
+        <button type="submit" className="admin-btn" disabled={isCreating}>
           {isCreating ? 'Adding…' : 'Add user'}
         </button>
       </form>
