@@ -1,10 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
 import { PageEditorProvider, usePageEditor } from './PageEditorContext';
 import EditorToolbar from './EditorToolbar';
 import './editor.css';
 
 function ShellInner({ title, liveHref, children }) {
-  const { status, error, discard } = usePageEditor();
+  const { status, error, discard, isDirty } = usePageEditor();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    if (isDirty && !window.confirm('You have unsaved changes that will be lost. Sign out anyway?')) {
+      return;
+    }
+    await logout();
+    navigate('/admin/login', { replace: true });
+  };
 
   return (
     <div className="mb-editor-shell">
@@ -16,6 +27,10 @@ function ShellInner({ title, liveHref, children }) {
             View live page &#8599;
           </a>
         )}
+        <span className="mb-editor-banner-user">{user.name}</span>
+        <button type="button" className="mb-editor-banner-signout" onClick={handleLogout}>
+          Sign out
+        </button>
       </div>
 
       {status === 'loading' && <p className="mb-editor-loading">Loading&hellip;</p>}

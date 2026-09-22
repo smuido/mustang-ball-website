@@ -29,6 +29,26 @@
   flex: 1;
 }
 
+.mb-editor-banner-user {
+  color: #cbd2e1;
+}
+
+.mb-editor-banner-signout {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: transparent;
+  border: 1px solid #565f73;
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+}
+
+.mb-editor-banner-signout:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .mb-editor-loading {
   padding: 3rem;
   text-align: center;
