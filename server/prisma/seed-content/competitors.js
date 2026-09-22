@@ -1,6 +1,6 @@
 // Text shown on the Competitor Guide page. The dance-style table is shared
 // with the Spectators page and lives in danceStyles.js instead.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const intro = 'Everything competitors need in one place: rules, levels, registration, '
   + 'competition-day policies, and resources.';

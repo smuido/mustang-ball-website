@@ -1,0 +1,37 @@
+databases:
+  - name: mustang-ball-db
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: mustang-ball-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mustang-ball-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 2h
+      - key: NODE_ENV
+        value: production
+      # Update this after your GitHub Pages URL is known, e.g.
+      # https://<github-username>.github.io. Comma-separate multiple origins.
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # Set these once in the Render dashboard, deploy, run the seed
+      # command below from the Render shell, then unset them.
+      - key: SEED_ADMIN_EMAIL
+        sync: false
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      - key: SEED_ADMIN_NAME
+        sync: false

@@ -1,10 +1,12 @@
 import './competitors.css';
 import bibImg from '../assets/IMG_2620.JPG';
 import DanceStyleTable from '../components/DanceStyleTable';
-import siteInfo from '../content/siteInfo';
-import * as content from '../content/competitors';
+import { useContentBlock } from '../content/ContentContext';
 
 export default function Competitors() {
+	const siteInfo = useContentBlock('siteInfo');
+	const content = useContentBlock('competitors');
+
 	return (
 		<div className="page">
 			<div className="page-hero">

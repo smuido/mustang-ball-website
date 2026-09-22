@@ -2,7 +2,7 @@
 // (mustangnews.net/tag/mustang-ball), the Cal Poly events calendar
 // (events.calpoly.edu/mustang-ball), and a Cal Poly Mustang Ball video
 // from The Tribune's YouTube channel.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const eyebrow = 'Our History';
 

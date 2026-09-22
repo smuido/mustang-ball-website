@@ -1,36 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
-import './App.css';
-import Footer from './components/Footer';
-import NavBar from './components/NavBar';
-import TopBar from './components/TopBar';
-import ScrollToTop from './components/ScrollToTop';
-import Home from './pages/home';
-import Competitors from './pages/competitors';
-import Spectators from './pages/spectators';
-import Contact from './pages/contact';
-import PastEvents from './pages/past-events';
-import OurHistory from './pages/our-history';
+import PublicSite from './PublicSite';
+import AdminApp from './admin/AdminApp';
 
 function App() {
   return (
-    <div className="App">
-      <ScrollToTop />
-      <header className="site-header">
-        <TopBar />
-        <NavBar />
-      </header>
-      <main className='main-content'>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/competitors" element={<Competitors />} />
-          <Route path="/spectators" element={<Spectators />} />
-          <Route path="/past-events" element={<PastEvents />} />
-          <Route path="/our-history" element={<OurHistory />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      <Route path="/admin/*" element={<AdminApp />} />
+      <Route path="/*" element={<PublicSite />} />
+    </Routes>
   );
 }
 

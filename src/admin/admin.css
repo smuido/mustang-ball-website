@@ -1,0 +1,267 @@
+.admin-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f4f5f7;
+  color: #1f2430;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.85rem 1.5rem;
+  background: #1f2430;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+.admin-brand {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-topnav {
+  display: flex;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.admin-topnav a {
+  color: #cbd2e1;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.admin-topnav a.active,
+.admin-topnav a:hover {
+  color: #fff;
+}
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.admin-role-badge {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.35rem;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.admin-page-subtitle {
+  color: #565f73;
+  margin-top: -0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.admin-card,
+a.admin-card {
+  display: block;
+  background: #fff;
+  border: 1px solid #e2e5ec;
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+a.admin-card:hover {
+  border-color: #b7bfd4;
+  box-shadow: 0 4px 14px rgba(31, 36, 48, 0.08);
+}
+
+.admin-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.admin-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #565f73;
+}
+
+.admin-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 720px;
+}
+
+.admin-inline-form {
+  max-width: 420px;
+}
+
+.admin-editor-form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.admin-editor-form input,
+.admin-editor-form select,
+.admin-editor-form textarea {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #cbd2e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.admin-json-editor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  min-height: 420px;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+}
+
+.admin-editor-hint {
+  font-size: 0.85rem;
+  color: #565f73;
+}
+
+.admin-meta-line {
+  font-size: 0.8rem;
+  color: #7a8296;
+}
+
+.admin-editor-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.admin-form-error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.admin-auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1f2430;
+  padding: 1rem;
+}
+
+.admin-auth-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-auth-card h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.3rem;
+}
+
+.admin-auth-subtitle {
+  margin: 0 0 1rem;
+  color: #565f73;
+  font-size: 0.9rem;
+}
+
+.admin-auth-card label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
+.admin-auth-card input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd2e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.admin-auth-card button {
+  margin-top: 1rem;
+}
+
+.admin-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #eceef2;
+}
+
+.admin-table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  border: 1px solid #1f2430;
+  background: #1f2430;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #1f2430;
+}

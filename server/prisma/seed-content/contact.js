@@ -1,6 +1,6 @@
 // Text shown on the Contact page. The social links reuse the URLs from
 // siteInfo.js, so update a link there and it updates everywhere.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const intro = {
   eyebrow: 'Get In Touch',

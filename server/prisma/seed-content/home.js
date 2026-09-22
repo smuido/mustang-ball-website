@@ -1,6 +1,6 @@
 // Text shown on the home page. Dates, links, and the event name itself
 // come from siteInfo.js so they only need to be updated in one place.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const hero = {
   eyebrow: 'Announcing',

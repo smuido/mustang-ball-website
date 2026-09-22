@@ -1,9 +1,7 @@
 import './Footer.css';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaEnvelope, FaFacebookF, FaGlobe, FaInstagram, FaMapMarkerAlt } from 'react-icons/fa';
-import siteInfo from '../content/siteInfo';
-import { footerNavLinks } from '../content/navigation';
-import { aboutHeading, aboutBefore, aboutLinkText, aboutAfter, exploreHeading, eventInfoHeading, hostedByLine, footerSocialLinks } from '../content/footer';
+import { useContentBlock } from '../content/ContentContext';
 
 const SOCIAL_ICONS = {
     Instagram: <FaInstagram />,
@@ -12,6 +10,9 @@ const SOCIAL_ICONS = {
 };
 
 export default function Footer() {
+    const siteInfo = useContentBlock('siteInfo');
+    const { footerNavLinks } = useContentBlock('navigation');
+    const { aboutHeading, aboutBefore, aboutLinkText, aboutAfter, exploreHeading, eventInfoHeading, hostedByLine, footerSocialLinks } = useContentBlock('footer');
     const currentYear = new Date().getFullYear();
     const footerLinks = footerSocialLinks.map((link) => ({ ...link, icon: SOCIAL_ICONS[link.name] }));
 

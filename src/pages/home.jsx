@@ -5,8 +5,7 @@ import lobbyImg from '../assets/IMG_2647.JPG';
 import practiceImg from '../assets/DSC01598.JPG';
 import reachImg from '../assets/DSC02237.JPG';
 import dipImg from '../assets/DSC02239.JPG';
-import siteInfo from '../content/siteInfo';
-import { hero, promoCard, introParagraphs, milestoneParagraph, quickLinks, quickLinksCtaLabel } from '../content/home';
+import { useContentBlock } from '../content/ContentContext';
 
 const heroPhotos = [
   { src: lobbyImg, alt: 'The Mustang Ball ballroom full of dancers and spectators', position: 'center 30%' },
@@ -15,6 +14,9 @@ const heroPhotos = [
 ];
 
 export default function Home() {
+  const siteInfo = useContentBlock('siteInfo');
+  const { hero, promoCard, introParagraphs, milestoneParagraph, quickLinks, quickLinksCtaLabel } = useContentBlock('home');
+
   return (
     <div className="page">
       <div className="hero">

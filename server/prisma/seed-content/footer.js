@@ -1,6 +1,6 @@
 // Text shown in the site footer. Links and event facts are pulled from
 // siteInfo.js so they stay in sync with the rest of the site.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const aboutHeading = siteInfo.eventName;
 

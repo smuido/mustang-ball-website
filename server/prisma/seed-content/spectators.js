@@ -1,6 +1,6 @@
 // Text shown on the Spectators page. The dance-style table is shared with
 // the Competitors page and lives in danceStyles.js instead.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const ticketTiers = {
   intro: 'Tickets for Mustang Ball can be purchased online or at the door. There are three tiers of spectator tickets.',

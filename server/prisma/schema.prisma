@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  editor
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(editor)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  revisions ContentRevision[]
+
+  @@map("users")
+}
+
+model ContentBlock {
+  key       String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+  updatedBy Int?
+
+  @@map("content_blocks")
+}
+
+model ContentRevision {
+  id        Int      @id @default(autoincrement())
+  key       String
+  data      Json
+  createdAt DateTime @default(now())
+  updatedBy Int?
+  user      User?    @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
+
+  @@index([key, createdAt])
+  @@map("content_revisions")
+}

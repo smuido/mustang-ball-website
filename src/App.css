@@ -29,3 +29,19 @@ img {
   max-width: 100%;
   display: block;
 }
+
+.site-loading {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.site-loading-error {
+  color: #b91c1c;
+}

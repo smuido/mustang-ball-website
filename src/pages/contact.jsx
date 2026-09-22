@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { FaFacebookF, FaGlobe, FaInstagram } from 'react-icons/fa';
 import './contact.css';
-import { intro, form, statusMessages, online, socialLinks as socialLinksContent } from '../content/contact';
+import { useContentBlock } from '../content/ContentContext';
 
 const SOCIAL_ICONS = {
     Instagram: <FaInstagram />,
@@ -16,6 +16,7 @@ const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 const SUBMIT_COOLDOWN_SECONDS = 30;
 
 export default function Contact() {
+    const { intro, form, statusMessages, online, socialLinks: socialLinksContent } = useContentBlock('contact');
     const [formData, setFormData] = useState({
         name: '',
         email: '',

@@ -2,9 +2,11 @@ import { Fragment } from 'react';
 import './spectators.css';
 import crowdImg from '../assets/IMG_2594.JPG';
 import DanceStyleTable from '../components/DanceStyleTable';
-import * as content from '../content/spectators';
+import { useContentBlock } from '../content/ContentContext';
 
 export default function Spectators() {
+    const content = useContentBlock('spectators');
+
     return (
         <div className="page">
             <div className="page-hero">

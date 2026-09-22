@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import './TopBar.css';
-import siteInfo from '../content/siteInfo';
+import { useContentBlock } from '../content/ContentContext';
 
 export default function TopBar() {
+    const siteInfo = useContentBlock('siteInfo');
     return (
         <div className="topbar">
             <div className="topbar-inner">

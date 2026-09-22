@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../assets/navbar_logo.png';
 import './NavBar.css';
-import { mainNavLinks, navCta } from '../content/navigation';
+import { useContentBlock } from '../content/ContentContext';
 
 export default function NavBar() {
+    const { mainNavLinks, navCta } = useContentBlock('navigation');
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);

@@ -1,8 +1,9 @@
-import { danceStyleColumns, danceStyleRows } from '../content/danceStyles';
+import { useContentBlock } from '../content/ContentContext';
 
-// Renders the shared 5-style dance table. The actual dance names live in
-// src/content/danceStyles.js — edit that file, not this one.
+// Renders the shared 5-style dance table. The actual dance names are
+// edited through the admin dashboard's "danceStyles" content block.
 export default function DanceStyleTable() {
+    const { danceStyleColumns, danceStyleRows } = useContentBlock('danceStyles');
     return (
         <table>
             <thead>

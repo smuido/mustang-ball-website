@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import './past-events.css';
-import * as mustangBallData from '../content/mustangball';
-import historyData from '../content/pastEvents';
+import { useContentBlock } from '../content/ContentContext';
 import Slideshow from '../components/Slideshow';
 import liftImg from '../assets/showcase_1.jpg';
 import formationImg from '../assets/IMG_2596.JPG';
@@ -18,6 +17,9 @@ const archivePhotos = [
 ];
 
 const PastEvents = () => {
+    const mustangBallData = useContentBlock('mustangball');
+    const historyData = useContentBlock('pastEvents');
+
     const years = Object.entries(mustangBallData)
         .filter(([key, value]) => /^year\d{4}$/.test(key) && value && Object.keys(value).length > 0)
         .map(([key]) => Number(key.replace('year', '')))

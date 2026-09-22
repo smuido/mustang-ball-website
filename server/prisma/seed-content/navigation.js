@@ -1,7 +1,7 @@
 // The links shown in the top menu bar and the footer's "Explore" column.
 // `to` is an internal page path; `href` (with `external: true`) is an
 // outside website that opens in a new tab.
-import siteInfo from './siteInfo';
+import siteInfo from './siteInfo.js';
 
 export const mainNavLinks = [
   { name: 'Competitors', to: '/competitors' },

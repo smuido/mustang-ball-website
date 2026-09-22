@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import './our-history.css';
 import walkImg from '../assets/DSC02227.JPG';
-import { eyebrow, intro, milestones, press, outroBefore, outroLinkText, outroAfter } from '../content/ourHistory';
+import { useContentBlock } from '../content/ContentContext';
 
 export default function OurHistory() {
+	const { eyebrow, intro, milestones, press, outroBefore, outroLinkText, outroAfter } = useContentBlock('ourHistory');
+
 	return (
 		<div className="page">
 			<div className="page-hero">
