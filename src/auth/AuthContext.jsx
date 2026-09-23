@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { apiFetch, setCsrfToken } from '../api/client';
+import { apiFetch, setAuthToken } from '../api/client';
 
 const AuthContext = createContext(null);
 
@@ -8,37 +8,38 @@ export function AuthProvider({ children }) {
 
   const refresh = useCallback(async () => {
     try {
-      const { user, csrfToken } = await apiFetch('/api/auth/me');
-      setCsrfToken(csrfToken);
+      const { user } = await apiFetch('/api/auth/me');
       setState({ status: 'authenticated', user });
     } catch {
-      setCsrfToken(null);
+      setAuthToken(null);
       setState({ status: 'anonymous', user: null });
     }
   }, []);
 
   useEffect(() => {
-    // Intentional session check on mount — resolves whether a valid auth
-    // cookie already exists before rendering protected routes.
+    // Intentional session check on mount — resolves whether a saved
+    // token is still valid before rendering protected routes.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 
-  const login = useCallback(async (email, password) => {
-    const { user, csrfToken } = await apiFetch('/api/auth/login', { method: 'POST', body: { email, password } });
-    setCsrfToken(csrfToken);
+  // `code` is the authorization code GitHub's popup callback hands back
+  // (see src/admin/oauth/githubAuth.js) — GitHub's flow has no
+  // self-contained token, so the backend exchanges this code itself.
+  const loginWithGithub = useCallback(async (code) => {
+    const { token, user } = await apiFetch('/api/auth/oauth/github', { method: 'POST', body: { credential: code } });
+    setAuthToken(token);
     setState({ status: 'authenticated', user });
     return user;
   }, []);
 
-  const logout = useCallback(async () => {
-    await apiFetch('/api/auth/logout', { method: 'POST' });
-    setCsrfToken(null);
+  const logout = useCallback(() => {
+    setAuthToken(null);
     setState({ status: 'anonymous', user: null });
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, refresh }}>
+    <AuthContext.Provider value={{ ...state, loginWithGithub, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );

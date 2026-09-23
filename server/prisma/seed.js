@@ -4,7 +4,6 @@
 // blocks that don't already exist, so it never clobbers edits made through
 // the dashboard.
 import 'dotenv/config';
-import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 
 import * as siteInfoModule from './seed-content/siteInfo.js';
@@ -107,41 +106,26 @@ async function seedContent() {
   }
 }
 
+// Ensures SEED_ADMIN_EMAIL is allow-listed as an admin. There's no
+// password to set — sign-in is GitHub OAuth, so this just creates (or
+// re-activates/promotes) the row that lets that email in.
+// Safe to leave set permanently and re-run on every deploy.
 async function seedAdminUser() {
   const email = process.env.SEED_ADMIN_EMAIL;
-  const password = process.env.SEED_ADMIN_PASSWORD;
   const name = process.env.SEED_ADMIN_NAME || 'Admin';
-  // Opt-in flag so a normal deploy never silently changes an existing
-  // password. Set SEED_ADMIN_RESET_PASSWORD=true alongside the vars above
-  // when you specifically want to reset a forgotten password (e.g. on a
-  // host with no shell access) — see server/README.md.
-  const shouldReset = process.env.SEED_ADMIN_RESET_PASSWORD === 'true';
 
-  if (!email || !password) {
-    console.log('SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not set, skipping admin user seed');
+  if (!email) {
+    console.log('SEED_ADMIN_EMAIL not set, skipping admin allow-list seed');
     return;
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  if (existing) {
-    if (!shouldReset) {
-      console.log(`admin user "${email}" already exists, skipping`);
-      return;
-    }
-    await prisma.user.update({
-      where: { email },
-      data: { passwordHash, isActive: true },
-    });
-    console.log(`reset password for existing user "${email}"`);
-    return;
-  }
-
-  await prisma.user.create({
-    data: { email, name, passwordHash, role: 'admin' },
+  const normalizedEmail = email.toLowerCase();
+  await prisma.user.upsert({
+    where: { email: normalizedEmail },
+    update: { role: 'admin', isActive: true },
+    create: { email: normalizedEmail, name, role: 'admin' },
   });
-  console.log(`created admin user "${email}"`);
+  console.log(`ensured admin allow-list entry for "${normalizedEmail}"`);
 }
 
 async function main() {

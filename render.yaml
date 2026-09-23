@@ -9,9 +9,10 @@ services:
     runtime: node
     rootDir: server
     plan: free
-    # db:seed is idempotent (it skips any content block or user that
-    # already exists), so it's safe to run on every build. This avoids
-    # needing Render's Shell tab, which isn't available on the free plan.
+    # db:seed is idempotent (it skips any content block that already
+    # exists, and safely re-ensures the admin allow-list entry), so it's
+    # safe to run on every build. This avoids needing Render's Shell tab,
+    # which isn't available on the free plan.
     buildCommand: npm install && npm run build && npm run db:seed
     startCommand: npm start
     healthCheckPath: /health
@@ -22,9 +23,9 @@ services:
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
-      # 400 days is the longest a cookie can actually live in any browser,
-      # so this is effectively "don't expire" — sessions only end on
-      # explicit sign-out or a password change.
+      # 400 days is the longest a session token's cookie-equivalent
+      # lifetime is worth setting — effectively "don't expire": sessions
+      # only end on explicit sign-out.
       - key: JWT_EXPIRES_IN
         value: 400d
       - key: NODE_ENV
@@ -33,15 +34,18 @@ services:
       # https://<github-username>.github.io. Comma-separate multiple origins.
       - key: ALLOWED_ORIGINS
         sync: false
-      # Set these before the first deploy so db:seed can create your admin
-      # login. Safe to leave set afterward (seed skips existing users), but
-      # if you'd rather not leave the password sitting in Render's config,
-      # delete these three after confirming you can log in, then trigger
-      # "Manual Deploy" from the Render dashboard (free, no shell needed)
-      # to redeploy without them.
-      - key: SEED_ADMIN_EMAIL
+      # From a GitHub OAuth App — see server/README.md "Setting up GitHub
+      # sign-in". Make sure your production callback URL is registered,
+      # not just localhost.
+      - key: GITHUB_CLIENT_ID
         sync: false
-      - key: SEED_ADMIN_PASSWORD
+      # Genuinely secret, unlike the client ID above — never put this in
+      # frontend code.
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      # Allow-lists your first dashboard login — no password, they sign
+      # in with GitHub themselves. Safe to leave set permanently.
+      - key: SEED_ADMIN_EMAIL
         sync: false
       - key: SEED_ADMIN_NAME
         sync: false

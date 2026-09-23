@@ -1,52 +1,51 @@
 import { Router } from 'express';
-import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
-import { AUTH_COOKIE, SESSION_MAX_AGE_MS, cookieOptions, issueSession } from '../lib/jwt.js';
+import { issueSession } from '../lib/jwt.js';
+import { exchangeGitHubCode } from '../lib/github.js';
 import { requireAuth } from '../middleware/auth.js';
 import { loginRateLimit } from '../middleware/rateLimit.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const authRouter = Router();
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-});
+const oauthSchema = z.object({ credential: z.string().min(1) });
 
-// Generic message on purpose: never reveal whether the email exists.
-const INVALID_CREDENTIALS = { error: 'Invalid email or password' };
+// Never reveal whether an email exists — same message whether the code
+// was invalid or the email just isn't allow-listed.
+const NOT_ALLOWED = { error: 'That account isn’t set up for this dashboard. Ask an admin to add you.' };
+
+function publicUser(user) {
+  return { id: user.id, email: user.email, name: user.name, role: user.role };
+}
 
 authRouter.post(
-  '/login',
+  '/oauth/github',
   loginRateLimit,
   asyncHandler(async (req, res) => {
-    const parsed = loginSchema.safeParse(req.body);
+    const parsed = oauthSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Invalid request' });
     }
-    const { email, password } = parsed.data;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    let profile;
+    try {
+      profile = await exchangeGitHubCode(parsed.data.credential);
+    } catch {
+      return res.status(401).json({ error: 'Could not verify that sign-in. Try again.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email: profile.email.toLowerCase() } });
     if (!user || !user.isActive) {
-      return res.status(401).json(INVALID_CREDENTIALS);
+      return res.status(403).json(NOT_ALLOWED);
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
-      return res.status(401).json(INVALID_CREDENTIALS);
-    }
+    await prisma.user.update({ where: { id: user.id }, data: { provider: 'github' } });
 
-    const { token, csrfToken } = issueSession(user);
-    res
-      .cookie(AUTH_COOKIE, token, cookieOptions(SESSION_MAX_AGE_MS))
-      .json({ user: { id: user.id, email: user.email, name: user.name, role: user.role }, csrfToken });
+    const token = issueSession(user);
+    res.json({ token, user: publicUser(user) });
   })
 );
-
-authRouter.post('/logout', (req, res) => {
-  res.clearCookie(AUTH_COOKIE, { path: '/' }).json({ ok: true });
-});
 
 authRouter.get(
   '/me',
@@ -56,6 +55,6 @@ authRouter.get(
     if (!user || !user.isActive) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role }, csrfToken: req.csrfToken });
+    res.json({ user: publicUser(user) });
   })
 );

@@ -2,67 +2,50 @@ import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { ApiError } from '../api/client';
+import GitHubSignInButton from './oauth/GitHubSignInButton';
 
 export default function LoginPage() {
-  const { status, login } = useAuth();
+  const { status, loginWithGithub } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (status === 'authenticated') {
     const redirectTo = location.state?.from?.pathname || '/admin';
     return <Navigate to={redirectTo} replace />;
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const goToDashboard = () => navigate(location.state?.from?.pathname || '/admin', { replace: true });
+
+  const handleGithubCode = async (code) => {
     setError('');
-    setIsSubmitting(true);
     try {
-      await login(email, password);
-      navigate(location.state?.from?.pathname || '/admin', { replace: true });
+      await loginWithGithub(code);
+      goToDashboard();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong. Try again.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="admin-auth-page">
-      <form className="admin-auth-card" onSubmit={handleSubmit}>
+      <div className="admin-auth-card">
         <h1>Mustang Ball Dashboard</h1>
-        <p className="admin-auth-subtitle">Sign in to edit the website.</p>
-
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          autoComplete="username"
-          required
-        />
-
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="current-password"
-          required
-        />
+        <p className="admin-auth-subtitle">Sign in with your GitHub account to edit the website.</p>
 
         {error && <p className="admin-form-error" role="alert">{error}</p>}
 
-        <button type="submit" className="admin-btn" disabled={isSubmitting}>
-          {isSubmitting ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
+        <div className="admin-oauth-buttons">
+          <GitHubSignInButton
+            onCode={handleGithubCode}
+            onError={(err) => setError(err?.message || 'GitHub sign-in failed. Try again.')}
+          />
+        </div>
+
+        <p className="admin-auth-footnote">
+          Only email addresses an admin has already added can sign in. Contact an admin if you need access.
+        </p>
+      </div>
     </div>
   );
 }

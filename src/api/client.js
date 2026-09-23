@@ -1,18 +1,34 @@
-// Talks to the mustang-ball-server backend. All requests send cookies
-// (the httpOnly JWT is attached automatically by the browser); mutating
-// requests also attach the CSRF header the backend requires alongside it.
+// Talks to the mustang-ball-server backend. Sessions travel as a bearer
+// token (see src/auth/AuthContext.jsx), not a cookie — the frontend and
+// API are on different domains, and a cookie set by the API's response is
+// scoped to the API's own origin, so frontend JS on a different origin
+// could never read it back to prove a session existed. Bearer tokens also
+// avoid browsers' growing restrictions on cross-site cookies (Safari ITP,
+// Chrome's third-party-cookie phase-out), which broke real logins in an
+// earlier version of this app. See server/README.md.
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
-// The CSRF token comes back in the login/`/me` response body (not a
-// cookie — the frontend and API are on different domains, so a cookie set
-// by the API's response isn't readable via document.cookie from a page on
-// a different origin). AuthContext calls setCsrfToken() after every
-// successful login/session check; apiFetch echoes it back as a header on
-// state-changing requests. See server/README.md for the full rationale.
-let csrfToken = null;
+const TOKEN_STORAGE_KEY = 'mb_auth_token';
 
-export function setCsrfToken(token) {
-  csrfToken = token;
+let token = null;
+try {
+  token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+} catch {
+  // Storage can throw in a locked-down/private-browsing context; treat
+  // it the same as "no saved session" rather than crashing the app.
+}
+
+export function setAuthToken(nextToken) {
+  token = nextToken;
+  try {
+    if (nextToken) {
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, nextToken);
+    } else {
+      window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore — the in-memory copy still works for the rest of this tab.
+  }
 }
 
 export class ApiError extends Error {
@@ -24,8 +40,6 @@ export class ApiError extends Error {
   }
 }
 
-const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
-
 export async function apiFetch(path, { method = 'GET', body, headers, ...rest } = {}) {
   const finalHeaders = { ...headers };
   let finalBody = body;
@@ -35,13 +49,12 @@ export async function apiFetch(path, { method = 'GET', body, headers, ...rest } 
     finalBody = JSON.stringify(body);
   }
 
-  if (MUTATING_METHODS.has(method) && csrfToken) {
-    finalHeaders['X-CSRF-Token'] = csrfToken;
+  if (token) {
+    finalHeaders['Authorization'] = `Bearer ${token}`;
   }
 
   const response = await fetch(`${API_URL}${path}`, {
     method,
-    credentials: 'include',
     headers: finalHeaders,
     body: finalBody,
     ...rest,

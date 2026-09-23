@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { apiFetch, ApiError } from '../api/client';
 
-const emptyForm = { email: '', name: '', password: '', role: 'editor' };
+const emptyForm = { email: '', name: '', role: 'editor' };
 
 export default function UsersPage() {
   const { user: currentUser } = useAuth();
@@ -70,7 +70,10 @@ export default function UsersPage() {
   return (
     <div>
       <h1>Users</h1>
-      <p className="admin-page-subtitle">Everyone who can sign into this dashboard.</p>
+      <p className="admin-page-subtitle">
+        Everyone allowed to sign into this dashboard. There are no passwords &mdash; people sign in with their own
+        GitHub account, and access is controlled entirely by whether their email is listed here.
+      </p>
 
       {error && <p className="admin-form-error" role="alert">{error}</p>}
 
@@ -82,12 +85,13 @@ export default function UsersPage() {
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
+              <th>Signed in with</th>
               <th aria-label="Actions" />
             </tr>
           </thead>
           <tbody>
             {users === null && (
-              <tr><td colSpan={5}>Loading&hellip;</td></tr>
+              <tr><td colSpan={6}>Loading&hellip;</td></tr>
             )}
             {users?.map((u) => (
               <tr key={u.id}>
@@ -104,6 +108,7 @@ export default function UsersPage() {
                   </select>
                 </td>
                 <td>{u.isActive ? 'Active' : 'Disabled'}</td>
+                <td>{u.provider ? 'GitHub' : 'Not signed in yet'}</td>
                 <td className="admin-table-actions">
                   <button
                     type="button"
@@ -129,6 +134,10 @@ export default function UsersPage() {
       </div>
 
       <h2>Add a user</h2>
+      <p className="admin-page-subtitle">
+        This just allow-lists their email &mdash; they sign in themselves with GitHub the first time they visit{' '}
+        <code>/admin</code>.
+      </p>
       <form className="admin-editor-form admin-inline-form" onSubmit={handleCreate}>
         <label htmlFor="new-name">Name</label>
         <input
@@ -146,16 +155,7 @@ export default function UsersPage() {
           onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
           required
         />
-
-        <label htmlFor="new-password">Temporary password</label>
-        <input
-          id="new-password"
-          type="password"
-          value={form.password}
-          onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
-          minLength={10}
-          required
-        />
+        <p className="admin-editor-hint">Must match the email on their GitHub account exactly.</p>
 
         <label htmlFor="new-role">Role</label>
         <select

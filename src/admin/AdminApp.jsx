@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../auth/AuthContext';
 import './admin.css';
 import LoginPage from './LoginPage';
+import GitHubCallbackPage from './oauth/GitHubCallbackPage';
 import AdminLayout from './AdminLayout';
 import ProtectedRoute from './ProtectedRoute';
 import DashboardPage from './DashboardPage';
@@ -20,6 +21,7 @@ export default function AdminApp() {
     <AuthProvider>
       <Routes>
         <Route path="login" element={<LoginPage />} />
+        <Route path="oauth/github/callback" element={<GitHubCallbackPage />} />
 
         {/* Page-mirror editors render their own full-bleed shell (see
             EditorPageShell) instead of AdminLayout's chrome, so the live

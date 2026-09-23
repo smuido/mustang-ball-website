@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
@@ -9,7 +8,7 @@ export const usersRouter = Router();
 
 usersRouter.use(requireAuth, requireRole('admin'));
 
-const selectFields = { id: true, email: true, name: true, role: true, isActive: true, createdAt: true };
+const selectFields = { id: true, email: true, name: true, role: true, isActive: true, provider: true, createdAt: true };
 
 usersRouter.get(
   '/',
@@ -19,10 +18,12 @@ usersRouter.get(
   })
 );
 
+// Creating a user here is really adding an email to the allow-list —
+// there's no password; they sign in with GitHub, and the backend checks
+// their verified email against this table.
 const createUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1).max(200),
-  password: z.string().min(10, 'Password must be at least 10 characters'),
   role: z.enum(['admin', 'editor']).default('editor'),
 });
 
@@ -33,16 +34,15 @@ usersRouter.post(
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.issues[0]?.message || 'Invalid request' });
     }
-    const { email, name, password, role } = parsed.data;
+    const { email, name, role } = parsed.data;
 
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     if (existing) {
       return res.status(409).json({ error: 'A user with that email already exists' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: { email, name, passwordHash, role },
+      data: { email: email.toLowerCase(), name, role },
       select: selectFields,
     });
     res.status(201).json(user);
@@ -53,7 +53,6 @@ const updateUserSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   role: z.enum(['admin', 'editor']).optional(),
   isActive: z.boolean().optional(),
-  password: z.string().min(10, 'Password must be at least 10 characters').optional(),
 });
 
 usersRouter.patch(
@@ -72,13 +71,7 @@ usersRouter.patch(
       return res.status(400).json({ error: "You can't remove your own admin role" });
     }
 
-    const { password, ...rest } = parsed.data;
-    const data = { ...rest };
-    if (password) {
-      data.passwordHash = await bcrypt.hash(password, 12);
-    }
-
-    const user = await prisma.user.update({ where: { id }, data, select: selectFields });
+    const user = await prisma.user.update({ where: { id }, data: parsed.data, select: selectFields });
     res.json(user);
   })
 );

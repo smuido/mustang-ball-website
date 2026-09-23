@@ -12,15 +12,22 @@ enum Role {
   editor
 }
 
+enum OAuthProvider {
+  github
+}
+
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  name         String
-  passwordHash String
-  role         Role     @default(editor)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        Int            @id @default(autoincrement())
+  email     String         @unique
+  name      String
+  role      Role           @default(editor)
+  isActive  Boolean        @default(true)
+  // Set on first successful sign-in; null for an allow-listed email that
+  // hasn't signed in yet. Login has no password — the email itself is the
+  // allow-list entry, verified against GitHub.
+  provider  OAuthProvider?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   revisions ContentRevision[]
 

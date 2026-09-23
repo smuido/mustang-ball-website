@@ -1,12 +1,13 @@
-import { AUTH_COOKIE, verifySession } from '../lib/jwt.js';
+import { verifySession } from '../lib/jwt.js';
 
-const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
-
-// Verifies the JWT cookie and, for any request that changes state, also
-// requires a matching X-CSRF-Token header — see server/README.md for why
-// the token travels via response body instead of a second cookie.
+// Verifies the bearer token in the Authorization header. No CSRF check is
+// needed here — unlike a cookie, a bearer header is never attached to a
+// request automatically by the browser, so a forged cross-site request
+// simply can't include it. See server/README.md and src/lib/jwt.js.
 export function requireAuth(req, res, next) {
-  const token = req.cookies?.[AUTH_COOKIE];
+  const header = req.get('Authorization') || '';
+  const token = header.startsWith('Bearer ') ? header.slice('Bearer '.length) : null;
+
   if (!token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
@@ -18,15 +19,7 @@ export function requireAuth(req, res, next) {
     return res.status(401).json({ error: 'Session expired or invalid' });
   }
 
-  if (MUTATING_METHODS.has(req.method)) {
-    const headerToken = req.get('X-CSRF-Token');
-    if (!headerToken || headerToken !== payload.csrf) {
-      return res.status(403).json({ error: 'Invalid CSRF token' });
-    }
-  }
-
   req.user = { id: payload.sub, email: payload.email, role: payload.role };
-  req.csrfToken = payload.csrf;
   next();
 }
 
