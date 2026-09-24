@@ -6,7 +6,9 @@ import { FaCalendarAlt, FaEnvelope, FaFacebookF, FaGlobe, FaInstagram, FaMapMark
 import EditorPageShell from '../editor/EditorPageShell';
 import Editable from '../editor/Editable';
 import { usePageEditor } from '../editor/PageEditorContext';
-import { AddButton, RemoveButton } from '../editor/ListControls';
+import { AddButton, DragHandle, RemoveButton } from '../editor/ListControls';
+import useDragReorder from '../editor/useDragReorder';
+import ImageEditable from '../editor/ImageEditable';
 
 const BLOCK_KEYS = ['siteInfo', 'navigation', 'footer'];
 
@@ -17,10 +19,12 @@ const FOOTER_SOCIAL_ICONS = {
 };
 
 function NavFooterCanvas() {
-  const { getValue, removeItem, addItem } = usePageEditor();
+  const { getValue, removeItem, addItem, moveItem } = usePageEditor();
   const mainNavLinks = getValue('navigation', ['mainNavLinks']) || [];
   const footerNavLinks = getValue('navigation', ['footerNavLinks']) || [];
   const footerSocialLinks = getValue('footer', ['footerSocialLinks']) || [];
+  const mainNavDrag = useDragReorder((from, to) => moveItem('navigation', ['mainNavLinks'], from, to));
+  const footerNavDrag = useDragReorder((from, to) => moveItem('navigation', ['footerNavLinks'], from, to));
 
   return (
     <div>
@@ -41,16 +45,20 @@ function NavFooterCanvas() {
       <nav className="navbar">
         <div className="navbar-container">
           <div className="navbar-logo">
-            <img src={logoImg} alt="Mustang Ball logo" className="logo-image" />
+            <ImageEditable className="logo-image" blockKey="siteInfo" path={['logoImageId']} fallbackSrc={logoImg} alt="Mustang Ball logo" />
           </div>
           <div className="navbar-right">
             <ul className="navbar-menu">
-              {mainNavLinks.map((link, index) => (
-                <li key={index} className="mb-list-item">
-                  <Editable as="span" blockKey="navigation" path={['mainNavLinks', index, 'name']} />
-                  <RemoveButton onClick={() => removeItem('navigation', ['mainNavLinks'], index)} />
-                </li>
-              ))}
+              {mainNavLinks.map((link, index) => {
+                const { className: dropClassName, ...rowProps } = mainNavDrag.getRowProps(index);
+                return (
+                  <li key={index} className={['mb-list-item', dropClassName].filter(Boolean).join(' ')} {...rowProps}>
+                    <DragHandle handleProps={mainNavDrag.getHandleProps(index)} label="Reorder nav link" />
+                    <Editable as="span" blockKey="navigation" path={['mainNavLinks', index, 'name']} />
+                    <RemoveButton onClick={() => removeItem('navigation', ['mainNavLinks'], index)} />
+                  </li>
+                );
+              })}
             </ul>
             <span className="btn navbar-cta">
               <Editable as="span" blockKey="navigation" path={['navCta', 'label']} />
@@ -102,11 +110,15 @@ function NavFooterCanvas() {
                 <Editable as="span" blockKey="footer" path={['exploreHeading']} />
               </h3>
               <ul className="footer-list">
-                {footerNavLinks.map((link, index) => (
-                  <li key={index}>
-                    <Editable as="span" className="footer-nav-link" blockKey="navigation" path={['footerNavLinks', index, 'name']} />
-                  </li>
-                ))}
+                {footerNavLinks.map((link, index) => {
+                  const { className: dropClassName, ...rowProps } = footerNavDrag.getRowProps(index);
+                  return (
+                    <li key={index} className={dropClassName || undefined} {...rowProps}>
+                      <DragHandle handleProps={footerNavDrag.getHandleProps(index)} label="Reorder footer link" />
+                      <Editable as="span" className="footer-nav-link" blockKey="navigation" path={['footerNavLinks', index, 'name']} />
+                    </li>
+                  );
+                })}
               </ul>
             </section>
 

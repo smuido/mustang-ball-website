@@ -2,8 +2,10 @@ import '../../pages/competitors.css';
 import bibImg from '../../assets/IMG_2620.JPG';
 import EditorPageShell from '../editor/EditorPageShell';
 import Editable from '../editor/Editable';
+import RichEditable from '../editor/RichEditable';
 import EditableDanceStyleTable from '../editor/EditableDanceStyleTable';
 import StringListEditor from '../editor/StringListEditor';
+import ImageEditable from '../editor/ImageEditable';
 import { usePageEditor } from '../editor/PageEditorContext';
 
 const BLOCK_KEYS = ['siteInfo', 'competitors', 'danceStyles'];
@@ -18,7 +20,7 @@ function CompetitorsCanvas() {
         <div className="card page-hero-card">
           <h1>Competitor Guide</h1>
           <p>
-            <Editable as="span" multiline blockKey="competitors" path={['intro']} />
+            <RichEditable as="span" blockKey="competitors" path={['intro']} />
           </p>
           <div className="btn-row">
             {buttons.map((button, index) => (
@@ -30,7 +32,7 @@ function CompetitorsCanvas() {
           <p className="mb-editor-hint-inline">Button links can&rsquo;t be changed here — use the raw content editor for that.</p>
         </div>
         <div className="bib-frame">
-          <img className="page-hero-image" src={bibImg} alt="" role="presentation" />
+          <ImageEditable className="page-hero-image" blockKey="competitors" path={['hero', 'imageId']} fallbackSrc={bibImg} />
         </div>
       </div>
 
@@ -51,15 +53,15 @@ function CompetitorsCanvas() {
 
       <h2>Eligibility</h2>
       <p>
-        <Editable as="span" multiline blockKey="competitors" path={['eligibility', 'intro']} />
+        <RichEditable as="span" blockKey="competitors" path={['eligibility', 'intro']} />
       </p>
       <ul>
-        <StringListEditor blockKey="competitors" path={['eligibility', 'disqualifyingActions']} itemLabel="reason" multiline />
+        <StringListEditor blockKey="competitors" path={['eligibility', 'disqualifyingActions']} itemLabel="reason" rich />
       </ul>
       <p>
-        <Editable as="span" multiline blockKey="competitors" path={['eligibility', 'outroBefore']} />
+        <RichEditable as="span" blockKey="competitors" path={['eligibility', 'outroBefore']} />
         <Editable as="span" blockKey="siteInfo" path={['contactEmail']} />
-        <Editable as="span" multiline blockKey="competitors" path={['eligibility', 'outroAfter']} />
+        <RichEditable as="span" blockKey="competitors" path={['eligibility', 'outroAfter']} />
       </p>
 
       <h2>Registration &amp; Fees</h2>
@@ -67,7 +69,7 @@ function CompetitorsCanvas() {
         <Editable as="span" multiline blockKey="competitors" path={['registrationAndFees', 'intro']} />
       </p>
       <ul>
-        <StringListEditor blockKey="competitors" path={['registrationAndFees', 'bullets']} itemLabel="bullet" multiline />
+        <StringListEditor blockKey="competitors" path={['registrationAndFees', 'bullets']} itemLabel="bullet" rich />
       </ul>
 
       <h2>Cancellations &amp; Refunds</h2>
@@ -91,7 +93,7 @@ function CompetitorsCanvas() {
       <hr className="section-divider" />
 
       <h3 className="fine-print-heading">Disclaimers</h3>
-      <StringListEditor blockKey="competitors" path={['disclaimers']} itemLabel="disclaimer" as="p" className="fine-print" multiline />
+      <StringListEditor blockKey="competitors" path={['disclaimers']} itemLabel="disclaimer" as="p" className="fine-print" rich />
     </div>
   );
 }

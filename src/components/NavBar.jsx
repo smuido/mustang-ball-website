@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import logoImg from '../assets/navbar_logo.png';
 import './NavBar.css';
 import { useContentBlock } from '../content/ContentContext';
+import { resolveImage } from '../utils/resolveImage';
 
 export default function NavBar() {
     const { mainNavLinks, navCta } = useContentBlock('navigation');
+    const siteInfo = useContentBlock('siteInfo');
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
@@ -37,7 +39,7 @@ export default function NavBar() {
             <div className="navbar-container">
                 <div className="navbar-logo">
                     <Link to="/">
-                        <img src={logoImg} alt="Mustang Ball logo" className="logo-image" />
+                        <img src={resolveImage(siteInfo.logoImageId, logoImg)} alt="Mustang Ball logo" className="logo-image" />
                     </Link>
                 </div>
 

@@ -30,6 +30,7 @@ model User {
   updatedAt DateTime       @updatedAt
 
   revisions ContentRevision[]
+  images    Image[]
 
   @@map("users")
 }
@@ -53,4 +54,21 @@ model ContentRevision {
 
   @@index([key, createdAt])
   @@map("content_revisions")
+}
+
+// Uploaded images for admin-editable photo slots (hero photos, cards,
+// etc.), stored as a DB blob rather than on disk — Render's web service
+// here has no persistent disk, so anything written to local disk is lost
+// on every redeploy; Postgres is the only durable storage available
+// without a new third-party account.
+model Image {
+  id        Int      @id @default(autoincrement())
+  data      Bytes
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+  createdBy Int?
+  user      User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+
+  @@map("images")
 }

@@ -44,7 +44,10 @@ export async function apiFetch(path, { method = 'GET', body, headers, ...rest } 
   const finalHeaders = { ...headers };
   let finalBody = body;
 
-  if (body !== undefined) {
+  if (body instanceof FormData) {
+    // Leave Content-Type unset — the browser fills in the multipart
+    // boundary itself, which it can only do if we don't set it.
+  } else if (body !== undefined) {
     finalHeaders['Content-Type'] = 'application/json';
     finalBody = JSON.stringify(body);
   }

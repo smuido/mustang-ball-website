@@ -7,18 +7,19 @@ import formationImg from '../assets/IMG_2596.JPG';
 import portraitImg from '../assets/IMG_2621.JPG';
 import latinImg from '../assets/DSC03035.JPG';
 import smoothImg from '../assets/DSC03092.JPG';
-
-const archivePhotos = [
-    { src: formationImg, alt: 'Three couples dancing in formation at Mustang Ball', position: 'center 25%' },
-    { src: liftImg, alt: 'A dramatic lift during a Mustang Ball showcase', position: 'center 50%' },
-    { src: portraitImg, alt: 'A couple dancing close together at Mustang Ball', position: 'center 13%' },
-    { src: latinImg, alt: 'A couple competing in a Latin event, bib number 201, at Mustang Ball', position: 'center 27%' },
-    { src: smoothImg, alt: 'A couple dancing a Smooth event at Mustang Ball', position: 'center 15%' },
-];
+import { resolveImage } from '../utils/resolveImage';
 
 const PastEvents = () => {
     const mustangBallData = useContentBlock('mustangball');
     const historyData = useContentBlock('pastEvents');
+
+    const archivePhotos = [
+        { src: resolveImage(historyData.archivePhoto1ImageId, formationImg), alt: 'Three couples dancing in formation at Mustang Ball', position: 'center 25%' },
+        { src: resolveImage(historyData.archivePhoto2ImageId, liftImg), alt: 'A dramatic lift during a Mustang Ball showcase', position: 'center 50%' },
+        { src: resolveImage(historyData.archivePhoto3ImageId, portraitImg), alt: 'A couple dancing close together at Mustang Ball', position: 'center 13%' },
+        { src: resolveImage(historyData.archivePhoto4ImageId, latinImg), alt: 'A couple competing in a Latin event, bib number 201, at Mustang Ball', position: 'center 27%' },
+        { src: resolveImage(historyData.archivePhoto5ImageId, smoothImg), alt: 'A couple dancing a Smooth event at Mustang Ball', position: 'center 15%' },
+    ];
 
     const years = Object.entries(mustangBallData)
         .filter(([key, value]) => /^year\d{4}$/.test(key) && value && Object.keys(value).length > 0)

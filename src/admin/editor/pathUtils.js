@@ -36,6 +36,17 @@ export function appendTo(obj, path, item) {
   return setIn(obj, path, next);
 }
 
+// Moves the item at `fromIndex` to `toIndex` in the array found at `path`.
+export function moveItem(obj, path, fromIndex, toIndex) {
+  const arr = getIn(obj, path);
+  if (!Array.isArray(arr) || fromIndex === toIndex) return obj;
+  if (fromIndex < 0 || fromIndex >= arr.length || toIndex < 0 || toIndex >= arr.length) return obj;
+  const next = [...arr];
+  const [moved] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, moved);
+  return setIn(obj, path, next);
+}
+
 // Deletes `key` from the object found at `path` (e.g. removing a whole
 // staff role, or a whole year record) — setIn can only overwrite an
 // existing key's value, not remove it, hence this separate helper.

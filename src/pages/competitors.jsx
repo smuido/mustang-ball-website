@@ -2,6 +2,8 @@ import './competitors.css';
 import bibImg from '../assets/IMG_2620.JPG';
 import DanceStyleTable from '../components/DanceStyleTable';
 import { useContentBlock } from '../content/ContentContext';
+import { resolveImage } from '../utils/resolveImage';
+import RichText from '../components/RichText';
 
 export default function Competitors() {
 	const siteInfo = useContentBlock('siteInfo');
@@ -12,7 +14,7 @@ export default function Competitors() {
 			<div className="page-hero">
 				<div className="card page-hero-card">
 					<h1>Competitor Guide</h1>
-					<p>{content.intro}</p>
+					<RichText as="p" html={content.intro} />
 					<div className="btn-row">
 						{content.buttons.map((button) => (
 							<a
@@ -28,7 +30,7 @@ export default function Competitors() {
 					</div>
 				</div>
 				<div className="bib-frame">
-					<img className="page-hero-image" src={bibImg} alt="" role="presentation" />
+					<img className="page-hero-image" src={resolveImage(content.hero?.imageId, bibImg)} alt="" role="presentation" />
 				</div>
 			</div>
 
@@ -44,23 +46,23 @@ export default function Competitors() {
 			<p>{content.events.afterTable}</p>
 
 			<h2>Eligibility</h2>
-			<p>{content.eligibility.intro}</p>
+			<RichText as="p" html={content.eligibility.intro} />
 			<ul>
 				{content.eligibility.disqualifyingActions.map((action) => (
-					<li key={action}>{action}</li>
+					<RichText as="li" key={action} html={action} />
 				))}
 			</ul>
 			<p>
-				{content.eligibility.outroBefore}
+				<RichText as="span" html={content.eligibility.outroBefore} />
 				<a href={`mailto:${siteInfo.contactEmail}`}>{siteInfo.contactEmail}</a>
-				{content.eligibility.outroAfter}
+				<RichText as="span" html={content.eligibility.outroAfter} />
 			</p>
 
 			<h2>Registration &amp; Fees</h2>
 			<p>{content.registrationAndFees.intro}</p>
 			<ul>
 				{content.registrationAndFees.bullets.map((bullet) => (
-					<li key={bullet}>{bullet}</li>
+					<RichText as="li" key={bullet} html={bullet} />
 				))}
 			</ul>
 
@@ -78,7 +80,7 @@ export default function Competitors() {
 
 			<h3 className="fine-print-heading">Disclaimers</h3>
 			{content.disclaimers.map((paragraph) => (
-				<p className="fine-print" key={paragraph}>{paragraph}</p>
+				<RichText as="p" className="fine-print" key={paragraph} html={paragraph} />
 			))}
 		</div>
 	);

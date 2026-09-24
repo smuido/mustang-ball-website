@@ -5,6 +5,7 @@ import { env } from './env.js';
 import { authRouter } from './routes/auth.routes.js';
 import { contentRouter } from './routes/content.routes.js';
 import { usersRouter } from './routes/users.routes.js';
+import { imagesRouter } from './routes/images.routes.js';
 
 export const app = express();
 
@@ -29,6 +30,7 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRouter);
 app.use('/api/content', contentRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/images', imagesRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });

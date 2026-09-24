@@ -6,11 +6,18 @@
 	border-radius: var(--radius);
 }
 
-.bib-frame .page-hero-image {
+.bib-frame .page-hero-image,
+/* In the admin editor, ImageEditable wraps the <img> in a positioning
+   span (.mb-image-editable) — give that wrapper the same absolute box
+   the bare <img> used to have, so it still fills .bib-frame. */
+.bib-frame .mb-image-editable {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
+}
+
+.bib-frame .page-hero-image {
 	aspect-ratio: unset;
 	border-radius: 0;
 	object-position: center 45%;

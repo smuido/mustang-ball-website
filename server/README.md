@@ -89,6 +89,37 @@ nothing. All future edits go through the dashboard (`PUT /api/content/:key`),
 which also writes the previous value to `content_revisions` before
 overwriting, so nothing is lost if someone saves something wrong.
 
+A handful of fields are rich-text-enabled (bold/italic/links), listed
+explicitly in `src/lib/richTextFields.js` — deliberately an allowlist, not
+every string in the block, since some existing content contains a literal
+`&` that would be corrupted by running it through an HTML sanitizer
+unconditionally. `PUT /api/content/:key` sanitizes exactly those fields
+(`src/lib/sanitizeContent.js`) down to a `<b>/<strong>/<i>/<em>/<a href>`
+allowlist before saving — the trust boundary for content that later renders
+as HTML on the public site, regardless of what the admin UI itself sent.
+
+**One-time migration after first deploying rich text**: content saved to
+those fields before this feature existed was plain text, so a literal
+`&`/`<`/`>` in it (there's at least one, in `competitors.disclaimers`) needs
+escaping once so it still displays correctly once those fields start
+rendering as HTML. Run this once, after migrating the database but before
+(or right after) editors start using the new rich-text formatting:
+
+```bash
+node scripts/escape-existing-rich-fields.js
+```
+
+It's safe to re-run — it skips any field that already looks like it
+contains real formatting.
+
+Uploaded images (hero photos, cards, etc.) are stored as binary blobs in
+the `images` table, not on disk — this Render web service has no
+persistent disk, so anything written to local disk is lost on every
+redeploy. `GET /api/images/:id` is public and streams the bytes with
+`Cross-Origin-Resource-Policy: cross-origin` (needed since `helmet()`'s
+default would otherwise block the frontend, on a different origin, from
+loading them).
+
 ## API
 
 | Method | Path | Auth | Description |
@@ -98,6 +129,8 @@ overwriting, so nothing is lost if someone saves something wrong.
 | GET | `/api/content/:key` | none | One content block |
 | PUT | `/api/content/:key` | session | Replace a content block |
 | GET | `/api/content/:key/revisions` | session | Last 20 saved-over versions |
+| POST | `/api/images` | session | Upload an image (multipart, 5MB max) &rarr; `{ id }` |
+| GET | `/api/images/:id` | none | The uploaded image's bytes |
 | POST | `/api/auth/oauth/github` | none (rate-limited) | `{ credential }` (GitHub authorization code) &rarr; `{ token, user }` |
 | GET | `/api/auth/me` | session | Current user |
 | GET/POST/PATCH/DELETE | `/api/users` | admin only | Manage the sign-in allow-list |

@@ -8,25 +8,55 @@ import latinImg from '../../assets/DSC03035.JPG';
 import smoothImg from '../../assets/DSC03092.JPG';
 import EditorPageShell from '../editor/EditorPageShell';
 import Editable from '../editor/Editable';
+import ImageEditable from '../editor/ImageEditable';
 import { usePageEditor } from '../editor/PageEditorContext';
-import { AddButton, RemoveButton } from '../editor/ListControls';
+import { AddButton, DragHandle, RemoveButton } from '../editor/ListControls';
+import useDragReorder from '../editor/useDragReorder';
+import { resolveImage } from '../../utils/resolveImage';
 
 const BLOCK_KEYS = ['pastEvents', 'mustangball'];
 
-const archivePhotos = [
-  { src: formationImg, alt: 'Three couples dancing in formation at Mustang Ball', position: 'center 25%' },
-  { src: liftImg, alt: 'A dramatic lift during a Mustang Ball showcase', position: 'center 50%' },
-  { src: portraitImg, alt: 'A couple dancing close together at Mustang Ball', position: 'center 13%' },
-  { src: latinImg, alt: 'A couple competing in a Latin event, bib number 201, at Mustang Ball', position: 'center 27%' },
-  { src: smoothImg, alt: 'A couple dancing a Smooth event at Mustang Ball', position: 'center 15%' },
+const ARCHIVE_PHOTO_SLOTS = [
+  { field: 'archivePhoto1ImageId', fallback: formationImg, alt: 'Three couples dancing in formation at Mustang Ball', position: 'center 25%', label: 'Photo 1' },
+  { field: 'archivePhoto2ImageId', fallback: liftImg, alt: 'A dramatic lift during a Mustang Ball showcase', position: 'center 50%', label: 'Photo 2' },
+  { field: 'archivePhoto3ImageId', fallback: portraitImg, alt: 'A couple dancing close together at Mustang Ball', position: 'center 13%', label: 'Photo 3' },
+  { field: 'archivePhoto4ImageId', fallback: latinImg, alt: 'A couple competing in a Latin event, bib number 201, at Mustang Ball', position: 'center 27%', label: 'Photo 4' },
+  { field: 'archivePhoto5ImageId', fallback: smoothImg, alt: 'A couple dancing a Smooth event at Mustang Ball', position: 'center 15%', label: 'Photo 5' },
 ];
+
+// Same reasoning as EditHome's HeroSlideshowEditor: the live Slideshow
+// rotates, which is a poor fit for "click the photo to replace it", so
+// this mirrors it for visual parity plus a static row of replaceable
+// thumbnails underneath.
+function ArchiveSlideshowEditor() {
+  const { getValue } = usePageEditor();
+  const resolvedPhotos = ARCHIVE_PHOTO_SLOTS.map((slot) => ({
+    src: resolveImage(getValue('pastEvents', [slot.field]), slot.fallback),
+    alt: slot.alt,
+    position: slot.position,
+  }));
+
+  return (
+    <div>
+      <Slideshow images={resolvedPhotos} ariaLabel="Photos from past Mustang Ball competitions" />
+      <div className="mb-hero-photo-thumbs">
+        {ARCHIVE_PHOTO_SLOTS.map((slot) => (
+          <div key={slot.field} className="mb-hero-photo-thumb">
+            <ImageEditable blockKey="pastEvents" path={[slot.field]} fallbackSrc={slot.fallback} alt={slot.label} />
+            <span className="mb-hero-photo-thumb-label">{slot.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function formatColumnLabel(key) {
   return key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function PastEventsCanvas() {
-  const { getValue, setValue, removeItem, addItem, removeField } = usePageEditor();
+  const { getValue, setValue, removeItem, addItem, removeField, moveItem } = usePageEditor();
   const mustangBallData = getValue('mustangball', []) || {};
   const historyData = getValue('pastEvents', []) || {};
 
@@ -41,6 +71,10 @@ function PastEventsCanvas() {
   const yearKey = `year${effectiveYear}`;
   const selectedYearData = mustangBallData[yearKey] || {};
   const roleColumns = Object.keys(selectedYearData).filter((c) => c !== 'resultsType' && c !== 'resultsFile');
+  // One hook instance serves every role's name list for the selected year —
+  // each role is its own drag "group" so a name can only reorder within
+  // its own role, not drop into a different one.
+  const namesDrag = useDragReorder((from, to, column) => moveItem('mustangball', [yearKey, column], from, to));
 
   const handleAddYear = () => {
     const input = window.prompt('New year (4 digits), e.g. 2027:');
@@ -72,7 +106,7 @@ function PastEventsCanvas() {
 
   return (
     <div className="page">
-      <Slideshow images={archivePhotos} ariaLabel="Photos from past Mustang Ball competitions" />
+      <ArchiveSlideshowEditor />
       <div className="history-container">
         <section className="content-area">
           <span className="eyebrow">Mustang Ball Archive</span>
@@ -96,12 +130,21 @@ function PastEventsCanvas() {
                           <RemoveButton label="Remove role" onClick={() => removeField('mustangball', [yearKey], column)} />
                         </th>
                         <td>
-                          {names.map((_, index) => (
-                            <span key={index} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginRight: '0.6rem' }}>
-                              <Editable as="span" blockKey="mustangball" path={[yearKey, column, index]} />
-                              <RemoveButton onClick={() => removeItem('mustangball', [yearKey, column], index)} />
-                            </span>
-                          ))}
+                          {names.map((_, index) => {
+                            const { className: dropClassName, ...rowProps } = namesDrag.getRowProps(index, column);
+                            return (
+                              <span
+                                key={index}
+                                className={dropClassName || undefined}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginRight: '0.6rem' }}
+                                {...rowProps}
+                              >
+                                <DragHandle handleProps={namesDrag.getHandleProps(index, column)} label="Reorder name" />
+                                <Editable as="span" blockKey="mustangball" path={[yearKey, column, index]} />
+                                <RemoveButton onClick={() => removeItem('mustangball', [yearKey, column], index)} />
+                              </span>
+                            );
+                          })}
                           <AddButton label="Add name" onClick={() => addItem('mustangball', [yearKey, column], 'New Name')} />
                         </td>
                       </tr>

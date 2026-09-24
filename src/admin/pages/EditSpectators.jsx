@@ -2,19 +2,28 @@ import '../../pages/spectators.css';
 import crowdImg from '../../assets/IMG_2594.JPG';
 import EditorPageShell from '../editor/EditorPageShell';
 import Editable from '../editor/Editable';
+import RichEditable from '../editor/RichEditable';
 import EditableDanceStyleTable from '../editor/EditableDanceStyleTable';
 import { usePageEditor } from '../editor/PageEditorContext';
-import { AddButton, RemoveButton } from '../editor/ListControls';
+import { AddButton, DragHandle, RemoveButton } from '../editor/ListControls';
+import useDragReorder from '../editor/useDragReorder';
+import ImageEditable from '../editor/ImageEditable';
 
 const BLOCK_KEYS = ['spectators', 'danceStyles'];
 
 function SpectatorsCanvas() {
-  const { getValue, removeItem, addItem } = usePageEditor();
+  const { getValue, removeItem, addItem, moveItem } = usePageEditor();
   const tiers = getValue('spectators', ['ticketTiers', 'tiers']) || [];
   const priceColumns = getValue('spectators', ['ticketPriceColumns']) || [];
   const priceRows = getValue('spectators', ['ticketPriceRows']) || [];
+  // Note: guide.levels intentionally has no drag-reorder — newcomerNote
+  // below is tied to array position 0, not to a specific level's
+  // identity, so reordering would silently misattach it to another level.
   const levels = getValue('spectators', ['guide', 'levels']) || [];
   const faq = getValue('spectators', ['faq']) || [];
+  const tiersDrag = useDragReorder((from, to) => moveItem('spectators', ['ticketTiers', 'tiers'], from, to));
+  const priceRowsDrag = useDragReorder((from, to) => moveItem('spectators', ['ticketPriceRows'], from, to));
+  const faqDrag = useDragReorder((from, to) => moveItem('spectators', ['faq'], from, to));
 
   return (
     <div className="page">
@@ -23,18 +32,22 @@ function SpectatorsCanvas() {
           <span className="eyebrow">Spectators</span>
           <h1>Tickets &amp; Admission</h1>
           <p>
-            <Editable as="span" multiline blockKey="spectators" path={['ticketTiers', 'intro']} />
+            <RichEditable as="span" blockKey="spectators" path={['ticketTiers', 'intro']} />
           </p>
           <ul>
-            {tiers.map((tier, index) => (
-              <li key={index}>
-                <strong>
-                  <Editable as="span" blockKey="spectators" path={['ticketTiers', 'tiers', index, 'name']} />:
-                </strong>{' '}
-                <Editable as="span" multiline blockKey="spectators" path={['ticketTiers', 'tiers', index, 'description']} />
-                <RemoveButton onClick={() => removeItem('spectators', ['ticketTiers', 'tiers'], index)} label="Remove tier" />
-              </li>
-            ))}
+            {tiers.map((tier, index) => {
+              const { className: dropClassName, ...rowProps } = tiersDrag.getRowProps(index);
+              return (
+                <li key={index} className={dropClassName || undefined} {...rowProps}>
+                  <DragHandle handleProps={tiersDrag.getHandleProps(index)} label="Reorder tier" />
+                  <strong>
+                    <Editable as="span" blockKey="spectators" path={['ticketTiers', 'tiers', index, 'name']} />:
+                  </strong>{' '}
+                  <RichEditable as="span" blockKey="spectators" path={['ticketTiers', 'tiers', index, 'description']} />
+                  <RemoveButton onClick={() => removeItem('spectators', ['ticketTiers', 'tiers'], index)} label="Remove tier" />
+                </li>
+              );
+            })}
             <li style={{ listStyle: 'none', marginLeft: '-1.4rem' }}>
               <AddButton
                 label="Add tier"
@@ -48,7 +61,13 @@ function SpectatorsCanvas() {
             </div>
           </div>
         </div>
-        <img className="page-hero-image" src={crowdImg} alt="" role="presentation" style={{ objectPosition: 'center 20%' }} />
+        <ImageEditable
+          className="page-hero-image"
+          blockKey="spectators"
+          path={['hero', 'imageId']}
+          fallbackSrc={crowdImg}
+          imgStyle={{ objectPosition: 'center 20%' }}
+        />
       </div>
 
       <h2>Ticket Prices</h2>
@@ -57,6 +76,7 @@ function SpectatorsCanvas() {
           <table>
             <thead>
               <tr>
+                <th aria-label="Reorder" />
                 {priceColumns.map((column, colIndex) => (
                   <th key={colIndex}>
                     <Editable as="span" blockKey="spectators" path={['ticketPriceColumns', colIndex]} />
@@ -66,18 +86,24 @@ function SpectatorsCanvas() {
               </tr>
             </thead>
             <tbody>
-              {priceRows.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {row.map((cell, cellIndex) => (
-                    <td key={cellIndex}>
-                      <Editable as="span" blockKey="spectators" path={['ticketPriceRows', rowIndex, cellIndex]} />
+              {priceRows.map((row, rowIndex) => {
+                const { className: dropClassName, ...rowProps } = priceRowsDrag.getRowProps(rowIndex);
+                return (
+                  <tr key={rowIndex} className={dropClassName || undefined} {...rowProps}>
+                    <td>
+                      <DragHandle handleProps={priceRowsDrag.getHandleProps(rowIndex)} label="Reorder row" />
                     </td>
-                  ))}
-                  <td>
-                    <RemoveButton onClick={() => removeItem('spectators', ['ticketPriceRows'], rowIndex)} label="Remove row" />
-                  </td>
-                </tr>
-              ))}
+                    {row.map((cell, cellIndex) => (
+                      <td key={cellIndex}>
+                        <Editable as="span" blockKey="spectators" path={['ticketPriceRows', rowIndex, cellIndex]} />
+                      </td>
+                    ))}
+                    <td>
+                      <RemoveButton onClick={() => removeItem('spectators', ['ticketPriceRows'], rowIndex)} label="Remove row" />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           <div className="mb-list-controls">
@@ -145,19 +171,23 @@ function SpectatorsCanvas() {
       <hr className="section-divider" />
 
       <h2>Frequently Asked Questions</h2>
-      {faq.map((_, index) => (
-        <div key={index} className="mb-list-item">
-          <h3>
-            <Editable as="span" blockKey="spectators" path={['faq', index, 'question']} />
-          </h3>
-          <p>
-            <Editable as="span" multiline blockKey="spectators" path={['faq', index, 'answer']} />
-          </p>
-          <div className="mb-list-controls">
-            <RemoveButton onClick={() => removeItem('spectators', ['faq'], index)} label="Remove question" />
+      {faq.map((_, index) => {
+        const { className: dropClassName, ...rowProps } = faqDrag.getRowProps(index);
+        return (
+          <div key={index} className={['mb-list-item', dropClassName].filter(Boolean).join(' ')} {...rowProps}>
+            <h3>
+              <DragHandle handleProps={faqDrag.getHandleProps(index)} label="Reorder question" />
+              <Editable as="span" blockKey="spectators" path={['faq', index, 'question']} />
+            </h3>
+            <p>
+              <RichEditable as="span" blockKey="spectators" path={['faq', index, 'answer']} />
+            </p>
+            <div className="mb-list-controls">
+              <RemoveButton onClick={() => removeItem('spectators', ['faq'], index)} label="Remove question" />
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       <AddButton
         label="Add question"
         onClick={() => addItem('spectators', ['faq'], { question: 'New question?', answer: 'Answer here.' })}

@@ -3,6 +3,7 @@ import emailjs from '@emailjs/browser';
 import { FaFacebookF, FaGlobe, FaInstagram } from 'react-icons/fa';
 import './contact.css';
 import { useContentBlock } from '../content/ContentContext';
+import RichText from '../components/RichText';
 
 const SOCIAL_ICONS = {
     Instagram: <FaInstagram />,
@@ -128,7 +129,7 @@ export default function Contact() {
         <div className="page">
             <span className="eyebrow">{intro.eyebrow}</span>
             <h1>Contact Us</h1>
-            <p>{intro.text}</p>
+            <RichText as="p" html={intro.text} />
 
             <div className="contact-grid">
                 <div className="card">
@@ -208,7 +209,7 @@ export default function Contact() {
 
                 <div className="card">
                     <h2>{online.heading}</h2>
-                    <p className="social-subtitle">{online.subtitle}</p>
+                    <RichText as="p" className="social-subtitle" html={online.subtitle} />
                     <div className="social-list" role="list">
                         {socialLinks.map((link) => (
                             <a

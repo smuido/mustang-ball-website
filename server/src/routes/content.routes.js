@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { sanitizeRichFields } from '../lib/sanitizeContent.js';
 
 export const contentRouter = Router();
 
@@ -46,7 +47,13 @@ contentRouter.put(
       return res.status(400).json({ error: 'Body must be { "data": { ...object... } }' });
     }
 
-    const size = Buffer.byteLength(JSON.stringify(parsed.data.data));
+    // Strips anything but a small bold/italic/link allowlist out of this
+    // block's rich-text-enabled fields (see richTextFields.js) — the
+    // trust boundary for content that gets rendered as HTML on the public
+    // site, regardless of what the admin UI itself sent.
+    const sanitizedData = sanitizeRichFields(key, parsed.data.data);
+
+    const size = Buffer.byteLength(JSON.stringify(sanitizedData));
     if (size > MAX_BLOCK_BYTES) {
       return res.status(413).json({ error: 'Content block too large' });
     }
@@ -62,7 +69,7 @@ contentRouter.put(
 
     const updated = await prisma.contentBlock.update({
       where: { key },
-      data: { data: parsed.data.data, updatedBy: req.user.id },
+      data: { data: sanitizedData, updatedBy: req.user.id },
     });
 
     res.json({ key: updated.key, data: updated.data, updatedAt: updated.updatedAt });

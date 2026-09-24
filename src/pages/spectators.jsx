@@ -3,6 +3,8 @@ import './spectators.css';
 import crowdImg from '../assets/IMG_2594.JPG';
 import DanceStyleTable from '../components/DanceStyleTable';
 import { useContentBlock } from '../content/ContentContext';
+import { resolveImage } from '../utils/resolveImage';
+import RichText from '../components/RichText';
 
 export default function Spectators() {
     const content = useContentBlock('spectators');
@@ -13,10 +15,10 @@ export default function Spectators() {
                 <div className="card page-hero-card">
                     <span className="eyebrow">Spectators</span>
                     <h1>Tickets &amp; Admission</h1>
-                    <p>{content.ticketTiers.intro}</p>
+                    <RichText as="p" html={content.ticketTiers.intro} />
                     <ul>
                         {content.ticketTiers.tiers.map((tier) => (
-                            <li key={tier.name}><strong>{tier.name}:</strong> {tier.description}</li>
+                            <li key={tier.name}><strong>{tier.name}:</strong> <RichText as="span" html={tier.description} /></li>
                         ))}
                     </ul>
                     <div className="btn-row">
@@ -25,7 +27,7 @@ export default function Spectators() {
                         </a>
                     </div>
                 </div>
-                <img className="page-hero-image" src={crowdImg} alt="" role="presentation" style={{ objectPosition: 'center 20%' }} />
+                <img className="page-hero-image" src={resolveImage(content.hero?.imageId, crowdImg)} alt="" role="presentation" style={{ objectPosition: 'center 20%' }} />
             </div>
 
             <h2>Ticket Prices</h2>
@@ -101,7 +103,7 @@ export default function Spectators() {
             {content.faq.map((item) => (
                 <Fragment key={item.question}>
                     <h3>{item.question}</h3>
-                    <p>{item.answer}</p>
+                    <RichText as="p" html={item.answer} />
                 </Fragment>
             ))}
         </div>

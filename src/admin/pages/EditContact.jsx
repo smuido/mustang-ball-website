@@ -2,6 +2,7 @@ import '../../pages/contact.css';
 import { FaFacebookF, FaGlobe, FaInstagram } from 'react-icons/fa';
 import EditorPageShell from '../editor/EditorPageShell';
 import Editable from '../editor/Editable';
+import RichEditable from '../editor/RichEditable';
 import { usePageEditor } from '../editor/PageEditorContext';
 
 const BLOCK_KEYS = ['contact'];
@@ -21,7 +22,7 @@ function ContactCanvas() {
       <Editable as="span" className="eyebrow" blockKey="contact" path={['intro', 'eyebrow']} />
       <h1>Contact Us</h1>
       <p>
-        <Editable as="span" multiline blockKey="contact" path={['intro', 'text']} />
+        <RichEditable as="span" blockKey="contact" path={['intro', 'text']} />
       </p>
 
       <div className="contact-grid">
@@ -80,7 +81,7 @@ function ContactCanvas() {
             <Editable as="span" blockKey="contact" path={['online', 'heading']} />
           </h2>
           <p className="social-subtitle">
-            <Editable as="span" multiline blockKey="contact" path={['online', 'subtitle']} />
+            <RichEditable as="span" blockKey="contact" path={['online', 'subtitle']} />
           </p>
           <div className="social-list" role="list">
             {socialLinks.map((link, index) => (

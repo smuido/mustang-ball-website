@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import './our-history.css';
 import walkImg from '../assets/DSC02227.JPG';
 import { useContentBlock } from '../content/ContentContext';
+import { resolveImage } from '../utils/resolveImage';
+import RichText from '../components/RichText';
 
 export default function OurHistory() {
-	const { eyebrow, intro, milestones, press, outroBefore, outroLinkText, outroAfter } = useContentBlock('ourHistory');
+	const { eyebrow, intro, milestones, press, outroBefore, outroLinkText, outroAfter, hero = {} } = useContentBlock('ourHistory');
 
 	return (
 		<div className="page">
@@ -12,9 +14,9 @@ export default function OurHistory() {
 				<div className="card page-hero-card">
 					<span className="eyebrow">{eyebrow}</span>
 					<h1>Our History</h1>
-					<p>{intro}</p>
+					<RichText as="p" html={intro} />
 				</div>
-				<img className="page-hero-image" src={walkImg} alt="" role="presentation" style={{ objectPosition: 'center 25%' }} />
+				<img className="page-hero-image" src={resolveImage(hero.imageId, walkImg)} alt="" role="presentation" style={{ objectPosition: 'center 25%' }} />
 			</div>
 
 			<hr className="section-divider" />
@@ -26,7 +28,7 @@ export default function OurHistory() {
 						<span className="timeline-year">{milestone.year}</span>
 						<div>
 							<h3>{milestone.heading}</h3>
-							<p>{milestone.text}</p>
+							<RichText as="p" html={milestone.text} />
 						</div>
 					</div>
 				))}
@@ -35,7 +37,7 @@ export default function OurHistory() {
 			<hr className="section-divider" />
 
 			<h2>{press.heading}</h2>
-			<p>{press.intro}</p>
+			<RichText as="p" html={press.intro} />
 			<ul>
 				{press.links.map((link) => (
 					<li key={link.name}>

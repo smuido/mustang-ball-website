@@ -6,9 +6,9 @@ export default function EditorToolbar() {
   return (
     <div className="mb-toolbar">
       <div className="mb-toolbar-status">
-        {saveError && <span className="mb-toolbar-error">{saveError}</span>}
-        {!saveError && saveState === 'saved' && <span className="mb-toolbar-saved">Saved &#10003;</span>}
-        {!saveError && saveState === 'idle' && isDirty && <span>Unsaved changes</span>}
+        {saveError && <span key="error" className="mb-toolbar-error">{saveError}</span>}
+        {!saveError && saveState === 'saved' && <span key="saved" className="mb-toolbar-saved">Saved &#10003;</span>}
+        {!saveError && saveState === 'idle' && isDirty && <span key="dirty">Unsaved changes</span>}
       </div>
       <div className="mb-toolbar-actions">
         <button

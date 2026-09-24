@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '../../api/client';
-import { appendTo, getIn, removeAt, removeKey, setIn } from './pathUtils';
+import { appendTo, getIn, moveItem as moveItemIn, removeAt, removeKey, setIn } from './pathUtils';
 
 const PageEditorContext = createContext(null);
 
@@ -59,6 +59,11 @@ export function PageEditorProvider({ blockKeys, children }) {
     [mutate]
   );
 
+  const moveItem = useCallback(
+    (blockKey, path, fromIndex, toIndex) => mutate(blockKey, (data) => moveItemIn(data, path, fromIndex, toIndex)),
+    [mutate]
+  );
+
   // For object-keyed data (a staff role, a year record) rather than
   // array indices — see pathUtils.removeKey.
   const removeField = useCallback(
@@ -96,6 +101,7 @@ export function PageEditorProvider({ blockKeys, children }) {
     setValue,
     removeItem,
     addItem,
+    moveItem,
     removeField,
     isDirty,
     save,

@@ -6,16 +6,18 @@ import practiceImg from '../assets/DSC01598.JPG';
 import reachImg from '../assets/DSC02237.JPG';
 import dipImg from '../assets/DSC02239.JPG';
 import { useContentBlock } from '../content/ContentContext';
-
-const heroPhotos = [
-  { src: lobbyImg, alt: 'The Mustang Ball ballroom full of dancers and spectators', position: 'center 30%' },
-  { src: practiceImg, alt: 'Dancers practicing together before Mustang Ball', position: 'center 30%' },
-  { src: reachImg, alt: 'A couple dancing with arms outstretched at Mustang Ball', position: 'center 120%' },
-];
+import { resolveImage } from '../utils/resolveImage';
+import RichText from '../components/RichText';
 
 export default function Home() {
   const siteInfo = useContentBlock('siteInfo');
   const { hero, promoCard, introParagraphs, milestoneParagraph, quickLinks, quickLinksCtaLabel } = useContentBlock('home');
+
+  const heroPhotos = [
+    { src: resolveImage(hero.lobbyImageId, lobbyImg), alt: 'The Mustang Ball ballroom full of dancers and spectators', position: 'center 30%' },
+    { src: resolveImage(hero.practiceImageId, practiceImg), alt: 'Dancers practicing together before Mustang Ball', position: 'center 30%' },
+    { src: resolveImage(hero.reachImageId, reachImg), alt: 'A couple dancing with arms outstretched at Mustang Ball', position: 'center 120%' },
+  ];
 
   return (
     <div className="page">
@@ -30,10 +32,10 @@ export default function Home() {
             </div>
           </div>
 
-          <Link to={promoCard.to} className="promo-card" style={{ backgroundImage: `url(${dipImg})` }}>
+          <Link to={promoCard.to} className="promo-card" style={{ backgroundImage: `url(${resolveImage(promoCard.imageId, dipImg)})` }}>
             <div className="promo-card-overlay">
               <h3>{promoCard.title}</h3>
-              <p>{promoCard.text}</p>
+              <RichText as="p" html={promoCard.text} />
               <span className="promo-link">{promoCard.linkLabel} &rarr;</span>
             </div>
           </Link>
@@ -45,7 +47,8 @@ export default function Home() {
             <p key={paragraph}>{paragraph}</p>
           ))}
           <p>
-            <strong>{milestoneParagraph.strong}</strong>{milestoneParagraph.rest}
+            <strong>{milestoneParagraph.strong}</strong>
+            <RichText as="span" html={milestoneParagraph.rest} />
           </p>
         </div>
       </div>
