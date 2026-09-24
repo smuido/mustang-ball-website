@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import '../../pages/home.css';
 import Slideshow from '../../components/Slideshow';
 import lobbyImg from '../../assets/IMG_2647.JPG';
@@ -9,6 +10,71 @@ import Editable from '../editor/Editable';
 import { usePageEditor } from '../editor/PageEditorContext';
 import { AddButton, RemoveButton } from '../editor/ListControls';
 
+// Edits `home.introParagraphs` as one combined textarea instead of a
+// separate editable box per paragraph. Paragraphs are split back out on
+// blank lines when the edit is committed, so the stored shape (an array
+// of paragraph strings) and the live site's rendering don't change.
+function IntroParagraphsEditor() {
+  const { getValue, setValue } = usePageEditor();
+  const paragraphs = getValue('home', ['introParagraphs']) || [];
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState('');
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [editing]);
+
+  const startEditing = () => {
+    setDraft(paragraphs.join('\n\n'));
+    setEditing(true);
+  };
+
+  const commit = () => {
+    const next = draft.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+    setValue('home', ['introParagraphs'], next);
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <textarea
+        ref={textareaRef}
+        className="mb-editable-input"
+        style={{ font: 'inherit', color: 'inherit' }}
+        rows={8}
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            setEditing(false);
+          }
+        }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={`mb-editable ${paragraphs.length === 0 ? 'mb-editable-empty' : ''}`}
+      onClick={startEditing}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') startEditing();
+      }}
+    >
+      {paragraphs.length > 0
+        ? paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)
+        : 'Click to edit'}
+    </div>
+  );
+}
+
 const BLOCK_KEYS = ['siteInfo', 'home'];
 
 const heroPhotos = [
@@ -19,7 +85,6 @@ const heroPhotos = [
 
 function HomeCanvas() {
   const { getValue, removeItem, addItem } = usePageEditor();
-  const introParagraphs = getValue('home', ['introParagraphs']) || [];
   const quickLinks = getValue('home', ['quickLinks']) || [];
 
   return (
@@ -60,20 +125,7 @@ function HomeCanvas() {
         <div className="hero-main">
           <Slideshow images={heroPhotos} className="hero-slideshow" ariaLabel="Photos from Mustang Ball" />
 
-          {introParagraphs.map((paragraph, index) => (
-            <div key={index} className="mb-list-item">
-              <p>
-                <Editable as="span" multiline blockKey="home" path={['introParagraphs', index]} />
-              </p>
-              <div className="mb-list-controls">
-                <RemoveButton onClick={() => removeItem('home', ['introParagraphs'], index)} label="Remove paragraph" />
-              </div>
-            </div>
-          ))}
-          <AddButton
-            label="Add paragraph"
-            onClick={() => addItem('home', ['introParagraphs'], 'New paragraph — click to edit.')}
-          />
+          <IntroParagraphsEditor />
 
           <p>
             <strong>
