@@ -19,6 +19,9 @@ const PastEvents = () => {
         { src: resolveImage(historyData.archivePhoto3ImageId, portraitImg), alt: 'A couple dancing close together at Mustang Ball', position: 'center 13%' },
         { src: resolveImage(historyData.archivePhoto4ImageId, latinImg), alt: 'A couple competing in a Latin event, bib number 201, at Mustang Ball', position: 'center 27%' },
         { src: resolveImage(historyData.archivePhoto5ImageId, smoothImg), alt: 'A couple dancing a Smooth event at Mustang Ball', position: 'center 15%' },
+        ...(historyData.extraArchivePhotos || [])
+            .map((photo) => ({ src: resolveImage(photo.imageId, null), alt: '', position: 'center' }))
+            .filter((photo) => photo.src),
     ];
 
     const years = Object.entries(mustangBallData)

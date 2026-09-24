@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import '../../pages/home.css';
 import Slideshow from '../../components/Slideshow';
 import lobbyImg from '../../assets/IMG_2647.JPG';
@@ -15,71 +15,6 @@ import { AddButton, DragHandle, RemoveButton } from '../editor/ListControls';
 import useDragReorder from '../editor/useDragReorder';
 import { resolveImage } from '../../utils/resolveImage';
 
-// Edits `home.introParagraphs` as one combined textarea instead of a
-// separate editable box per paragraph. Paragraphs are split back out on
-// blank lines when the edit is committed, so the stored shape (an array
-// of paragraph strings) and the live site's rendering don't change.
-function IntroParagraphsEditor() {
-  const { getValue, setValue } = usePageEditor();
-  const paragraphs = getValue('home', ['introParagraphs']) || [];
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState('');
-  const textareaRef = useRef(null);
-
-  useEffect(() => {
-    if (editing && textareaRef.current) {
-      textareaRef.current.focus();
-    }
-  }, [editing]);
-
-  const startEditing = () => {
-    setDraft(paragraphs.join('\n\n'));
-    setEditing(true);
-  };
-
-  const commit = () => {
-    const next = draft.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
-    setValue('home', ['introParagraphs'], next);
-    setEditing(false);
-  };
-
-  if (editing) {
-    return (
-      <textarea
-        ref={textareaRef}
-        className="mb-editable-input"
-        style={{ font: 'inherit', color: 'inherit' }}
-        rows={8}
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        onBlur={commit}
-        onKeyDown={(event) => {
-          if (event.key === 'Escape') {
-            event.preventDefault();
-            setEditing(false);
-          }
-        }}
-      />
-    );
-  }
-
-  return (
-    <div
-      className={`mb-editable ${paragraphs.length === 0 ? 'mb-editable-empty' : ''}`}
-      onClick={startEditing}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') startEditing();
-      }}
-    >
-      {paragraphs.length > 0
-        ? paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)
-        : 'Click to edit'}
-    </div>
-  );
-}
-
 const BLOCK_KEYS = ['siteInfo', 'home'];
 
 const HERO_PHOTO_SLOTS = [
@@ -91,15 +26,27 @@ const HERO_PHOTO_SLOTS = [
 // The live hero uses a rotating Slideshow, which is a poor fit for
 // "click the photo to replace it" — the photo you want might not be the
 // one currently showing. Instead: mirror the Slideshow for visual parity
-// (using whatever's been uploaded so far), plus a static row of labeled
-// thumbnails underneath, each independently replaceable.
+// (using whatever's been uploaded so far, plus any added photos), plus a
+// static row of labeled thumbnails underneath, each independently
+// replaceable. The 3 original photos are fixed named slots with a
+// bundled fallback; anything added beyond those lives in
+// `home.hero.extraPhotos`, a plain array of uploads with no fallback —
+// same add/remove/reorder treatment as every other list on this page.
 function HeroSlideshowEditor() {
-  const { getValue } = usePageEditor();
-  const resolvedPhotos = HERO_PHOTO_SLOTS.map((slot) => ({
-    src: resolveImage(getValue('home', ['hero', slot.field]), slot.fallback),
-    alt: slot.alt,
-    position: slot.position,
-  }));
+  const { getValue, addItem, removeItem, moveItem } = usePageEditor();
+  const extraPhotos = getValue('home', ['hero', 'extraPhotos']) || [];
+  const extraDrag = useDragReorder((from, to) => moveItem('home', ['hero', 'extraPhotos'], from, to));
+
+  const resolvedPhotos = [
+    ...HERO_PHOTO_SLOTS.map((slot) => ({
+      src: resolveImage(getValue('home', ['hero', slot.field]), slot.fallback),
+      alt: slot.alt,
+      position: slot.position,
+    })),
+    ...extraPhotos
+      .map((photo) => ({ src: resolveImage(photo.imageId, null), alt: '', position: 'center' }))
+      .filter((photo) => photo.src),
+  ];
 
   return (
     <div>
@@ -111,7 +58,20 @@ function HeroSlideshowEditor() {
             <span className="mb-hero-photo-thumb-label">{slot.label}</span>
           </div>
         ))}
+        {extraPhotos.map((_, index) => {
+          const { className: dropClassName, ...rowProps } = extraDrag.getRowProps(index);
+          return (
+            <div key={index} className={['mb-hero-photo-thumb', dropClassName].filter(Boolean).join(' ')} {...rowProps}>
+              <div className="mb-hero-photo-thumb-row">
+                <DragHandle handleProps={extraDrag.getHandleProps(index)} label="Reorder photo" />
+                <ImageEditable blockKey="home" path={['hero', 'extraPhotos', index, 'imageId']} alt="Additional hero photo" />
+              </div>
+              <RemoveButton onClick={() => removeItem('home', ['hero', 'extraPhotos'], index)} label="Remove photo" />
+            </div>
+          );
+        })}
       </div>
+      <AddButton label="Add photo" onClick={() => addItem('home', ['hero', 'extraPhotos'], { imageId: null })} />
     </div>
   );
 }
@@ -193,7 +153,7 @@ function HomeCanvas() {
         <div className="hero-main">
           <HeroSlideshowEditor />
 
-          <IntroParagraphsEditor />
+          <RichEditable as="div" blockKey="home" path={['introHtml']} />
 
           <p>
             <strong>

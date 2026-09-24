@@ -27,14 +27,25 @@ const ARCHIVE_PHOTO_SLOTS = [
 // Same reasoning as EditHome's HeroSlideshowEditor: the live Slideshow
 // rotates, which is a poor fit for "click the photo to replace it", so
 // this mirrors it for visual parity plus a static row of replaceable
-// thumbnails underneath.
+// thumbnails underneath. The 5 original photos are fixed named slots
+// with a bundled fallback; anything added beyond those lives in
+// `pastEvents.extraArchivePhotos`, a plain array of uploads with no
+// fallback — same add/remove/reorder treatment as every other list here.
 function ArchiveSlideshowEditor() {
-  const { getValue } = usePageEditor();
-  const resolvedPhotos = ARCHIVE_PHOTO_SLOTS.map((slot) => ({
-    src: resolveImage(getValue('pastEvents', [slot.field]), slot.fallback),
-    alt: slot.alt,
-    position: slot.position,
-  }));
+  const { getValue, addItem, removeItem, moveItem } = usePageEditor();
+  const extraPhotos = getValue('pastEvents', ['extraArchivePhotos']) || [];
+  const extraDrag = useDragReorder((from, to) => moveItem('pastEvents', ['extraArchivePhotos'], from, to));
+
+  const resolvedPhotos = [
+    ...ARCHIVE_PHOTO_SLOTS.map((slot) => ({
+      src: resolveImage(getValue('pastEvents', [slot.field]), slot.fallback),
+      alt: slot.alt,
+      position: slot.position,
+    })),
+    ...extraPhotos
+      .map((photo) => ({ src: resolveImage(photo.imageId, null), alt: '', position: 'center' }))
+      .filter((photo) => photo.src),
+  ];
 
   return (
     <div>
@@ -46,7 +57,20 @@ function ArchiveSlideshowEditor() {
             <span className="mb-hero-photo-thumb-label">{slot.label}</span>
           </div>
         ))}
+        {extraPhotos.map((_, index) => {
+          const { className: dropClassName, ...rowProps } = extraDrag.getRowProps(index);
+          return (
+            <div key={index} className={['mb-hero-photo-thumb', dropClassName].filter(Boolean).join(' ')} {...rowProps}>
+              <div className="mb-hero-photo-thumb-row">
+                <DragHandle handleProps={extraDrag.getHandleProps(index)} label="Reorder photo" />
+                <ImageEditable blockKey="pastEvents" path={['extraArchivePhotos', index, 'imageId']} alt="Additional archive photo" />
+              </div>
+              <RemoveButton onClick={() => removeItem('pastEvents', ['extraArchivePhotos'], index)} label="Remove photo" />
+            </div>
+          );
+        })}
       </div>
+      <AddButton label="Add photo" onClick={() => addItem('pastEvents', ['extraArchivePhotos'], { imageId: null })} />
     </div>
   );
 }

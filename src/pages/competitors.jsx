@@ -47,11 +47,7 @@ export default function Competitors() {
 
 			<h2>Eligibility</h2>
 			<RichText as="p" html={content.eligibility.intro} />
-			<ul>
-				{content.eligibility.disqualifyingActions.map((action) => (
-					<RichText as="li" key={action} html={action} />
-				))}
-			</ul>
+			<RichText as="div" html={content.eligibility.disqualifyingActionsHtml} />
 			<p>
 				<RichText as="span" html={content.eligibility.outroBefore} />
 				<a href={`mailto:${siteInfo.contactEmail}`}>{siteInfo.contactEmail}</a>
@@ -60,11 +56,7 @@ export default function Competitors() {
 
 			<h2>Registration &amp; Fees</h2>
 			<p>{content.registrationAndFees.intro}</p>
-			<ul>
-				{content.registrationAndFees.bullets.map((bullet) => (
-					<RichText as="li" key={bullet} html={bullet} />
-				))}
-			</ul>
+			<RichText as="div" html={content.registrationAndFees.bulletsHtml} />
 
 			<h2>Cancellations &amp; Refunds</h2>
 			<p>{content.cancellationsAndRefunds.text}</p>
@@ -79,9 +71,7 @@ export default function Competitors() {
 			<hr className="section-divider" />
 
 			<h3 className="fine-print-heading">Disclaimers</h3>
-			{content.disclaimers.map((paragraph) => (
-				<RichText as="p" className="fine-print" key={paragraph} html={paragraph} />
-			))}
+			<RichText as="div" className="fine-print" html={content.disclaimersHtml} />
 		</div>
 	);
 }

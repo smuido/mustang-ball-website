@@ -31,7 +31,7 @@ const contentBlocks = {
   home: {
     hero: homeModule.hero,
     promoCard: homeModule.promoCard,
-    introParagraphs: homeModule.introParagraphs,
+    introHtml: homeModule.introHtml,
     milestoneParagraph: homeModule.milestoneParagraph,
     quickLinksCtaLabel: homeModule.quickLinksCtaLabel,
     quickLinks: homeModule.quickLinks,
@@ -60,7 +60,7 @@ const contentBlocks = {
     cancellationsAndRefunds: competitorsModule.cancellationsAndRefunds,
     formationTeam: competitorsModule.formationTeam,
     shoeAndCostumePolicy: competitorsModule.shoeAndCostumePolicy,
-    disclaimers: competitorsModule.disclaimers,
+    disclaimersHtml: competitorsModule.disclaimersHtml,
   },
   spectators: {
     ticketTiers: spectatorsModule.ticketTiers,

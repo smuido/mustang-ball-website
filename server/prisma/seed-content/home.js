@@ -14,15 +14,14 @@ export const promoCard = {
   to: '/spectators',
 };
 
-// Two plain intro paragraphs, shown in order under the main photo.
-export const introParagraphs = [
-  "The Central Coast collegiate DanceSport Competition — Mustang Ball began "
-    + 'as a small competition with less than 100 competitors. Now, it hosts over 250 competitors '
-    + "and is Cal Poly Ballroom's largest event of the year.",
-  'Mustang Ball is a Collegiate Dancesport Association (CDA) certified competition '
-    + 'covering American, International, and Nightclub styles. Amateur couples from across '
-    + 'the region compete for placements while a full house of spectators cheers them on.',
-];
+// Intro text shown under the main photo, edited as one rich-text block
+// (see src/admin/pages/EditHome.jsx) rather than separate paragraph vars.
+export const introHtml = '<p>The Central Coast collegiate DanceSport Competition — Mustang Ball began '
+  + 'as a small competition with less than 100 competitors. Now, it hosts over 250 competitors '
+  + "and is Cal Poly Ballroom's largest event of the year.</p>"
+  + '<p>Mustang Ball is a Collegiate Dancesport Association (CDA) certified competition '
+  + 'covering American, International, and Nightclub styles. Amateur couples from across '
+  + 'the region compete for placements while a full house of spectators cheers them on.</p>';
 
 // The final paragraph has a bold lead-in sentence, then a normal sentence
 // after it. `strong` is composed from siteInfo so the year/ordinal stay in

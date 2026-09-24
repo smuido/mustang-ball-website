@@ -1,10 +1,16 @@
 import sanitizeHtml from 'sanitize-html';
-import { richTextFields } from './richTextFields.js';
+import { richTextFields, richTextBlockFields } from './richTextFields.js';
 
-const SANITIZE_OPTIONS = {
+const INLINE_OPTIONS = {
   allowedTags: ['b', 'strong', 'i', 'em', 'a'],
   allowedAttributes: { a: ['href'] },
   allowedSchemes: ['http', 'https', 'mailto'],
+};
+
+const BLOCK_OPTIONS = {
+  allowedTags: [...INLINE_OPTIONS.allowedTags, 'p', 'ul', 'ol', 'li'],
+  allowedAttributes: INLINE_OPTIONS.allowedAttributes,
+  allowedSchemes: INLINE_OPTIONS.allowedSchemes,
 };
 
 function getAtPath(obj, path) {
@@ -46,23 +52,33 @@ function expandPattern(data, pattern) {
   return paths;
 }
 
-// Sanitizes only the fields listed in richTextFields for this content
-// block — see that file for why this is a scoped allowlist rather than a
-// blanket walk of every string in the JSON tree.
-export function sanitizeRichFields(key, data) {
-  const patterns = richTextFields[key];
-  if (!patterns) return data;
-
+function sanitizeFields(data, patterns, options) {
   let result = data;
   for (const pattern of patterns) {
     for (const path of expandPattern(result, pattern)) {
       const value = getAtPath(result, path);
       if (typeof value !== 'string') continue;
-      const sanitized = sanitizeHtml(value, SANITIZE_OPTIONS);
+      const sanitized = sanitizeHtml(value, options);
       if (sanitized !== value) {
         result = setAtPath(result, path, sanitized);
       }
     }
+  }
+  return result;
+}
+
+// Sanitizes only the fields listed in richTextFields/richTextBlockFields
+// for this content block — see richTextFields.js for why this is a
+// scoped allowlist rather than a blanket walk of every string in the
+// JSON tree, and why block fields get a wider tag allowlist than inline
+// ones.
+export function sanitizeRichFields(key, data) {
+  let result = data;
+  if (richTextFields[key]) {
+    result = sanitizeFields(result, richTextFields[key], INLINE_OPTIONS);
+  }
+  if (richTextBlockFields[key]) {
+    result = sanitizeFields(result, richTextBlockFields[key], BLOCK_OPTIONS);
   }
   return result;
 }

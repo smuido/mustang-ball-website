@@ -89,21 +89,28 @@ nothing. All future edits go through the dashboard (`PUT /api/content/:key`),
 which also writes the previous value to `content_revisions` before
 overwriting, so nothing is lost if someone saves something wrong.
 
-A handful of fields are rich-text-enabled (bold/italic/links), listed
-explicitly in `src/lib/richTextFields.js` — deliberately an allowlist, not
-every string in the block, since some existing content contains a literal
-`&` that would be corrupted by running it through an HTML sanitizer
-unconditionally. `PUT /api/content/:key` sanitizes exactly those fields
-(`src/lib/sanitizeContent.js`) down to a `<b>/<strong>/<i>/<em>/<a href>`
-allowlist before saving — the trust boundary for content that later renders
-as HTML on the public site, regardless of what the admin UI itself sent.
+A handful of fields are rich-text-enabled, listed explicitly in
+`src/lib/richTextFields.js` — deliberately an allowlist, not every string in
+the block, since some existing content contains a literal `&` that would be
+corrupted by running it through an HTML sanitizer unconditionally.
+`richTextFields` (single-paragraph prose, e.g. `competitors.intro`) allows
+bold/italic/links only; `richTextBlockFields` (multi-paragraph/bullet-list
+content, e.g. `competitors.disclaimersHtml`) also allows `<p>/<ul>/<ol>/<li>`.
+`PUT /api/content/:key` sanitizes exactly those fields
+(`src/lib/sanitizeContent.js`) down to the matching allowlist before saving —
+the trust boundary for content that later renders as HTML on the public
+site, regardless of what the admin UI itself sent.
 
-**One-time migration after first deploying rich text**: content saved to
-those fields before this feature existed was plain text, so a literal
-`&`/`<`/`>` in it (there's at least one, in `competitors.disclaimers`) needs
-escaping once so it still displays correctly once those fields start
-rendering as HTML. Run this once, after migrating the database but before
-(or right after) editors start using the new rich-text formatting:
+**One-time migration whenever a field is newly added to `richTextFields.js`
+or `richTextBlockFields.js`** (or renamed, the way `competitors.disclaimers`
+became `disclaimersHtml`): if that field already held plain text under its
+old name, any literal `&`/`<`/`>` in it needs escaping once so it still
+displays correctly once it starts rendering as HTML — the seed content for
+the current rich fields has already been hand-escaped where needed (see
+`disclaimersHtml` in `prisma/seed-content/competitors.js`, which contains a
+literal `&`), so this only matters for *already-saved* dashboard edits, not
+a fresh seed. Run it once, after deploying the schema/field change but
+before (or right after) editors start using the new field:
 
 ```bash
 node scripts/escape-existing-rich-fields.js

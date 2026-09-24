@@ -11,12 +11,15 @@ import RichText from '../components/RichText';
 
 export default function Home() {
   const siteInfo = useContentBlock('siteInfo');
-  const { hero, promoCard, introParagraphs, milestoneParagraph, quickLinks, quickLinksCtaLabel } = useContentBlock('home');
+  const { hero, promoCard, introHtml, milestoneParagraph, quickLinks, quickLinksCtaLabel } = useContentBlock('home');
 
   const heroPhotos = [
     { src: resolveImage(hero.lobbyImageId, lobbyImg), alt: 'The Mustang Ball ballroom full of dancers and spectators', position: 'center 30%' },
     { src: resolveImage(hero.practiceImageId, practiceImg), alt: 'Dancers practicing together before Mustang Ball', position: 'center 30%' },
     { src: resolveImage(hero.reachImageId, reachImg), alt: 'A couple dancing with arms outstretched at Mustang Ball', position: 'center 120%' },
+    ...(hero.extraPhotos || [])
+      .map((photo) => ({ src: resolveImage(photo.imageId, null), alt: '', position: 'center' }))
+      .filter((photo) => photo.src),
   ];
 
   return (
@@ -43,9 +46,7 @@ export default function Home() {
 
         <div className="hero-main">
           <Slideshow images={heroPhotos} className="hero-slideshow" ariaLabel="Photos from Mustang Ball" />
-          {introParagraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
+          <RichText as="div" html={introHtml} />
           <p>
             <strong>{milestoneParagraph.strong}</strong>
             <RichText as="span" html={milestoneParagraph.rest} />

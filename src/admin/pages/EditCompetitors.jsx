@@ -4,7 +4,6 @@ import EditorPageShell from '../editor/EditorPageShell';
 import Editable from '../editor/Editable';
 import RichEditable from '../editor/RichEditable';
 import EditableDanceStyleTable from '../editor/EditableDanceStyleTable';
-import StringListEditor from '../editor/StringListEditor';
 import ImageEditable from '../editor/ImageEditable';
 import { usePageEditor } from '../editor/PageEditorContext';
 
@@ -55,9 +54,7 @@ function CompetitorsCanvas() {
       <p>
         <RichEditable as="span" blockKey="competitors" path={['eligibility', 'intro']} />
       </p>
-      <ul>
-        <StringListEditor blockKey="competitors" path={['eligibility', 'disqualifyingActions']} itemLabel="reason" rich />
-      </ul>
+      <RichEditable as="div" blockKey="competitors" path={['eligibility', 'disqualifyingActionsHtml']} list />
       <p>
         <RichEditable as="span" blockKey="competitors" path={['eligibility', 'outroBefore']} />
         <Editable as="span" blockKey="siteInfo" path={['contactEmail']} />
@@ -68,9 +65,7 @@ function CompetitorsCanvas() {
       <p>
         <Editable as="span" multiline blockKey="competitors" path={['registrationAndFees', 'intro']} />
       </p>
-      <ul>
-        <StringListEditor blockKey="competitors" path={['registrationAndFees', 'bullets']} itemLabel="bullet" rich />
-      </ul>
+      <RichEditable as="div" blockKey="competitors" path={['registrationAndFees', 'bulletsHtml']} list />
 
       <h2>Cancellations &amp; Refunds</h2>
       <p>
@@ -93,7 +88,7 @@ function CompetitorsCanvas() {
       <hr className="section-divider" />
 
       <h3 className="fine-print-heading">Disclaimers</h3>
-      <StringListEditor blockKey="competitors" path={['disclaimers']} itemLabel="disclaimer" as="p" className="fine-print" rich />
+      <RichEditable as="div" className="fine-print" blockKey="competitors" path={['disclaimersHtml']} />
     </div>
   );
 }

@@ -16,9 +16,13 @@
 //
 // Usage: cd server && node scripts/escape-existing-rich-fields.js
 import { prisma } from '../src/lib/prisma.js';
-import { richTextFields } from '../src/lib/richTextFields.js';
+import { richTextFields, richTextBlockFields } from '../src/lib/richTextFields.js';
 
-const ALREADY_RICH = /<(b|strong|i|em|a)[\s>]/i;
+const ALREADY_RICH = /<(b|strong|i|em|a|p|ul|ol|li)[\s>]/i;
+
+function mergedPatterns(key) {
+  return [...(richTextFields[key] || []), ...(richTextBlockFields[key] || [])];
+}
 
 function getAtPath(obj, path) {
   return path.reduce((acc, key) => (acc == null ? undefined : acc[key]), obj);
@@ -60,7 +64,8 @@ function escapeIfPlainText(value) {
 }
 
 async function main() {
-  for (const key of Object.keys(richTextFields)) {
+  const keys = new Set([...Object.keys(richTextFields), ...Object.keys(richTextBlockFields)]);
+  for (const key of keys) {
     const block = await prisma.contentBlock.findUnique({ where: { key } });
     if (!block) {
       console.log(`skip ${key}: no such content block`);
@@ -69,7 +74,7 @@ async function main() {
 
     let data = block.data;
     let changed = false;
-    for (const pattern of richTextFields[key]) {
+    for (const pattern of mergedPatterns(key)) {
       for (const path of expandPattern(data, pattern)) {
         const value = getAtPath(data, path);
         if (typeof value !== 'string') continue;

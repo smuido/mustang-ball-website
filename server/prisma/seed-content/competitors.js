@@ -29,12 +29,14 @@ export const eligibility = {
     + 'requirement. Professional competitors are not eligible. An individual '
     + 'will be considered a Professional and ineligible for competition if they '
     + 'have ever done any of the following:',
-  disqualifyingActions: [
-    'Registered as a Professional with any dance association (such as NDCA, USADance, ISTD, etc)',
-    'Competed as a Professional',
-    'Declared themself as a Professional by word or deed',
-    'Have solicited or received monetary compensation from a partner for competing at any collegiate Ballroom Dance competition',
-  ],
+  // One rich-text block (see src/admin/pages/EditCompetitors.jsx) instead
+  // of a separate var per bullet.
+  disqualifyingActionsHtml: '<ul>'
+    + '<li>Registered as a Professional with any dance association (such as NDCA, USADance, ISTD, etc)</li>'
+    + '<li>Competed as a Professional</li>'
+    + '<li>Declared themself as a Professional by word or deed</li>'
+    + '<li>Have solicited or received monetary compensation from a partner for competing at any collegiate Ballroom Dance competition</li>'
+    + '</ul>',
   // Split around the email address so the page can render it as a clickable
   // mailto link. `outroBefore` comes right before the email, `outroAfter`
   // comes right after it.
@@ -45,11 +47,11 @@ export const eligibility = {
 
 export const registrationAndFees = {
   intro: 'Register online and pay through the EventBrite before the Early Registration deadline to save on your ticket!',
-  bullets: [
-    'Competitor entry includes admission.',
-    'Each competitor must pay an entry fee.',
-    'Nightclub entries use Beginner or Intermediate/Advanced levels.',
-  ],
+  bulletsHtml: '<ul>'
+    + '<li>Competitor entry includes admission.</li>'
+    + '<li>Each competitor must pay an entry fee.</li>'
+    + '<li>Nightclub entries use Beginner or Intermediate/Advanced levels.</li>'
+    + '</ul>',
 };
 
 export const cancellationsAndRefunds = {
@@ -72,14 +74,15 @@ export const shoeAndCostumePolicy = {
     + 'each level, their allowed choreography, and how costumes pertain to each level.',
 };
 
-export const disclaimers = [
-  'The Cal Poly DanceSport Team & Cal Poly Ballroom Dance Club (including officers, members, '
-    + 'assistants, and helpers), Cal Poly Associated Students Inc., the California Polytechnic State '
-    + 'University and all associated entities are not liable for any injuries that may occur during '
-    + 'the course of this event, nor for any property that is lost, stolen, or damaged. All persons '
-    + 'at this event compete and attend at their own risk and are responsible for their own belongings.',
-  'The Cal Poly DanceSport Team reserves the right to cancel any events and/or change the schedule at any time.',
-  'Competitors and spectators should be aware that during the course of the competition, anyone in the ballroom '
-    + 'may be photographed or videotaped by any variety of people for private or public viewing. Everyone attending '
-    + 'this competition hereby consents by their attendance at the competition to be photographed or videotaped.',
-];
+// One rich-text block (see src/admin/pages/EditCompetitors.jsx) instead of
+// a separate var per paragraph. The literal "&" below is written as
+// `&amp;` since this is now HTML, not plain text.
+export const disclaimersHtml = '<p>The Cal Poly DanceSport Team &amp; Cal Poly Ballroom Dance Club (including officers, members, '
+  + 'assistants, and helpers), Cal Poly Associated Students Inc., the California Polytechnic State '
+  + 'University and all associated entities are not liable for any injuries that may occur during '
+  + 'the course of this event, nor for any property that is lost, stolen, or damaged. All persons '
+  + 'at this event compete and attend at their own risk and are responsible for their own belongings.</p>'
+  + '<p>The Cal Poly DanceSport Team reserves the right to cancel any events and/or change the schedule at any time.</p>'
+  + '<p>Competitors and spectators should be aware that during the course of the competition, anyone in the ballroom '
+  + 'may be photographed or videotaped by any variety of people for private or public viewing. Everyone attending '
+  + 'this competition hereby consents by their attendance at the competition to be photographed or videotaped.</p>';

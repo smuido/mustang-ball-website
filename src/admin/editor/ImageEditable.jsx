@@ -8,7 +8,10 @@ import { resolveImage } from '../../utils/resolveImage';
 // existing bundled Vite asset, shown until an admin uploads a
 // replacement — old content rows have no value at `path` yet, so
 // `getValue` returning undefined falls straight back to it (no data
-// migration needed).
+// migration needed). For a slot with no fallback (a newly added photo
+// via an "Add photo" button — see e.g. EditHome's HeroSlideshowEditor),
+// renders an empty upload placeholder instead of a broken <img> until
+// something's uploaded.
 export default function ImageEditable({ blockKey, path, fallbackSrc, alt = '', className, imgStyle }) {
   const { getValue, setValue } = usePageEditor();
   const imageId = getValue(blockKey, path);
@@ -23,16 +26,18 @@ export default function ImageEditable({ blockKey, path, fallbackSrc, alt = '', c
     if (id) setValue(blockKey, path, id);
   };
 
+  const src = resolveImage(imageId, fallbackSrc);
+
   return (
-    <span className="mb-image-editable">
-      <img className={className} src={resolveImage(imageId, fallbackSrc)} alt={alt} style={imgStyle} />
+    <span className={`mb-image-editable ${!src ? 'mb-image-editable-empty' : ''}`}>
+      {src && <img className={className} src={src} alt={alt} style={imgStyle} />}
       <button
         type="button"
-        className="mb-image-editable-overlay"
+        className={src ? 'mb-image-editable-overlay' : 'mb-image-editable-add'}
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
       >
-        {uploading ? 'Uploading…' : 'Click to replace photo'}
+        {uploading ? 'Uploading…' : src ? 'Click to replace photo' : '+ Add photo'}
       </button>
       {error && <span className="mb-image-editable-error">{error}</span>}
       <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleChange} />
